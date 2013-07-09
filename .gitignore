@@ -1,0 +1,16 @@
+.classpath
+.project
+bin/AndroidManifest.xml
+bin/classes/it/oasis/bussoleno/BuildConfig.class
+bin/classes/it/oasis/bussoleno/MainActivity.class
+bin/classes/it/oasis/bussoleno/R$attr.class
+bin/classes/it/oasis/bussoleno/R$dimen.class
+bin/classes/it/oasis/bussoleno/R$drawable.class
+bin/classes/it/oasis/bussoleno/R$id.class
+bin/classes/it/oasis/bussoleno/R$layout.class
+bin/classes/it/oasis/bussoleno/R$menu.class
+bin/classes/it/oasis/bussoleno/R$string.class
+bin/classes/it/oasis/bussoleno/R$style.class
+bin/classes/it/oasis/bussoleno/R.class
+gen/it/oasis/bussoleno/BuildConfig.java
+gen/it/oasis/bussoleno/R.java

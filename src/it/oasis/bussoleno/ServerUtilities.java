@@ -18,6 +18,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Helper class used to communicate with the demo server.
@@ -116,7 +118,7 @@ public final class ServerUtilities {
 
 	}
 
-	static void get(String endpoint, String params) throws IOException {
+	static String get(String endpoint, String params) throws IOException {
 
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpget = new HttpGet(endpoint + params);
@@ -126,15 +128,29 @@ public final class ServerUtilities {
 		content = response.getEntity().getContent();
 		// Wrap a BufferedReader around the InputStream
 		BufferedReader rd = new BufferedReader(new InputStreamReader(content));
-		String s = "response: ";
+		StringBuilder sb = new StringBuilder();
 		String line = "";
 		// Read response until the end
 		while ((line = rd.readLine()) != null) {
-			s += line;
+			sb.append(line);
 		}
-		Log.d(TAG, s);
+		Log.d(TAG, sb.toString());
 		rd.close();
-
+		return sb.toString();
 	}
 
+	static JSONObject getJSON(String endpoint, String params) throws IOException{
+		
+		JSONObject jObj;
+		String json = get(endpoint, params);
+		
+		try {
+            jObj = new JSONObject(json);
+        } catch (JSONException e) {
+        	jObj = new JSONObject();
+            Log.e("JSON Parser", "Error parsing data " + e.toString());
+        }
+		return jObj;
+	}
+	
 }

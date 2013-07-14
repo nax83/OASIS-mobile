@@ -5,11 +5,22 @@
     android:versionName="1.0" >
 
     <uses-permission android:name="android.permission.INTERNET" /> 
-    
+   	<uses-permission android:name="android.permission.CAMERA" />
+ 	<uses-permission android:name="android.permission.FLASHLIGHT" />
+    	
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
+    <!-- Don't require camera, as this requires a rear camera. This allows it to work on the Nexus 7 -->
+	<uses-feature android:name="android.hardware.camera" android:required="false"/>
+	<uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+	<!-- TODO replace above two with next line after Android 4.2 -->
+	<!-- <uses-feature android:name="android.hardware.camera.any"/> -->
+	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+	<uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+	<uses-feature android:name="android.hardware.screen.landscape"/>
+    
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -22,6 +33,20 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+         <!-- ZXing activities -->
+        <activity
+            android:name="com.google.zxing.client.android.CaptureActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="com.phonegap.plugins.barcodescanner.SCAN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

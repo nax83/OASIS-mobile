@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#FFFFFF</color>
+    <color name="gray">#E0E0E0</color>
+    <color name="black">#000000</color>
+    <color name="blue_base">#449def</color>
+    <color name="blue_stroke">#2F6699</color>
+    <color name="blue_gradientS">#00a2e2</color>
+    <color name="blue_gradientE">#0767a4</color>
+    <color name="dark_gray">#666666</color>
+    <color name="red">#FF002F</color>
+    <color name="clear_red">#FF0000</color>
+    <color name="red_tlab">#cc071e</color>
+    <color name="clear_gold">#EAEAAE</color>
+    
+</resources>

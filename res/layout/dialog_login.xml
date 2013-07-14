@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/user_edit"
+        style="@style/user_edit"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="50dp"
+        android:hint="@string/user"
+        android:inputType="textPersonName"
+        android:maxLength="30" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/pwd_edit"
+        style="@style/match_edit"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:hint="@string/pwd"
+        android:inputType="textPassword"
+        android:maxLength="25" />
+
+    <Button
+        android:id="@+id/btn_login"
+        style="@style/text_button"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:height="35dp"
+        android:maxWidth="130dp"
+        android:text="@string/btn_login" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dip" 
+        android:indeterminate="true"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible">
+    </ProgressBar>
+
+</LinearLayout>

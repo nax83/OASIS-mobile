@@ -29,7 +29,6 @@
 
     <Button
         android:id="@+id/btn_login"
-        style="@style/text_button"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"

@@ -54,30 +54,15 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		
-		ArrayList<HashMap<String, String>> tmp = new ArrayList<HashMap<String,String>>();
-		HashMap<String, String> tmp2 = new HashMap<String, String>(); 
-		tmp2.put("first", "antonio");
-		tmp2.put("last", "bianchi");
-		tmp.add(tmp2);
-		tmp2 = new HashMap<String, String>(); 
-		tmp2.put("first", "mario");
-		tmp2.put("last", "rossi");
-		tmp.add(tmp2);
-		tmp2 = new HashMap<String, String>(); 
-		tmp2.put("first", "pinco");
-		tmp2.put("last", "pallo");
-		tmp.add(tmp2);
-		tmp2 = new HashMap<String, String>(); 
-		tmp2.put("first", "antonio");
-		tmp2.put("last", "bianchi");
-		tmp.add(tmp2);
 		if (findViewById(R.id.fragment_container) != null) {
-			ListAdapter adapter = new SimpleAdapter(MainActivity.this,
-					tmp, R.layout.card_item, new String[] { TAG_FIRST, TAG_LAST },
-					new int[] { R.id.first, R.id.last });
+			ArrayList<Card> aaa = new ArrayList<Card>();
+			aaa.add(new Card("pinco1","pallo1",null));
+			aaa.add(new Card("pinco2","pallo2",null));
+			aaa.add(new Card("pinco3","pallo3",null));
+			aaa.add(new Card("pinco4","pallo4",null));
+			CardsAdapter cards = new CardsAdapter(this, aaa);
 			listFragment = CardsListFragment.newInstance();
-			listFragment.setListAdapter(adapter);
+			listFragment.setListAdapter(cards);
 			getSupportFragmentManager().beginTransaction()
 			.add(R.id.fragment_container, listFragment, CARDS_FRAGMENT).commit();
 		}

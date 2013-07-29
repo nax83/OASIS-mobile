@@ -41,14 +41,6 @@
         android:visibility="gone" >
 
         <Button
-            android:id="@+id/btn_ok"
-            style="@style/card_button"
-            android:background="@drawable/confirm"
-            android:text="@string/btn_ok"
-            android:layout_weight="1"
-            android:layout_margin="10dp" />
-
-        <Button
             android:id="@+id/btn_ko"
             style="@style/card_button"
             android:background="@drawable/cancel"
@@ -56,6 +48,14 @@
             android:layout_weight="1"
             android:layout_margin="10dp"/>
         
+        <Button
+            android:id="@+id/btn_ok"
+            style="@style/card_button"
+            android:background="@drawable/confirm"
+            android:text="@string/btn_ok"
+            android:layout_weight="1"
+            android:layout_margin="10dp" />
+    
     </LinearLayout>
 
     <ProgressBar

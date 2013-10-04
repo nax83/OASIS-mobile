@@ -1,4 +1,4 @@
-package it.oasis.bussoleno;
+package it.bussoleno.oasis;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;

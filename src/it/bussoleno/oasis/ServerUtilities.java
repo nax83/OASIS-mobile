@@ -1,4 +1,4 @@
-package it.oasis.bussoleno;
+package it.bussoleno.oasis;
 
 import android.util.Log;
 
@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,24 +22,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Helper class used to communicate with the demo server.
- */
 public final class ServerUtilities {
+	
+	public static final String DOMAIN = "http://www.google.it";
+	public static final String ACTION_LOGIN = DOMAIN + "/login";
+	public static final String ACTION_GETRESOURCE = DOMAIN + "/getresource";
+	
 	private static final String TAG = "ServerUtilities";
 
-	/**
-	 * Issue a POST request to the server.
-	 * 
-	 * @param endpoint
-	 *            POST address.
-	 * @param params
-	 *            request parameters.
-	 * 
-	 * @throws IOException
-	 *             propagated from POST.
-	 */
-	static void post(String endpoint, Map<String, String> params)
+	public static void post(String endpoint, Map<String, String> params)
 			throws IOException {
 		URL url;
 		try {
@@ -75,7 +67,7 @@ public final class ServerUtilities {
 			out.close();
 			// handle the response
 			int status = conn.getResponseCode();
-			if (status != 200) {
+			if (status >= 400) {
 				throw new IOException("Post failed with error code " + status);
 			}
 		} finally {
@@ -85,7 +77,7 @@ public final class ServerUtilities {
 		}
 	}
 
-	static void get(String endpoint, Map<String, String> params)
+	public static String get(String endpoint, Map<String, String> params)
 			throws IOException {
 
 		StringBuilder bodyBuilder = new StringBuilder();
@@ -107,15 +99,15 @@ public final class ServerUtilities {
 		content = response.getEntity().getContent();
 		// Wrap a BufferedReader around the InputStream
 		BufferedReader rd = new BufferedReader(new InputStreamReader(content));
-		String s = "response: ";
+		StringBuilder sb = new StringBuilder();
 		String line = "";
 		// Read response until the end
 		while ((line = rd.readLine()) != null) {
-			s += line;
+			sb.append(line);
 		}
-		Log.d(TAG, s);
+		Log.d(TAG, sb.toString());
 		rd.close();
-
+		return sb.toString();
 	}
 
 	static String get(String endpoint, String params) throws IOException {
@@ -139,17 +131,20 @@ public final class ServerUtilities {
 		return sb.toString();
 	}
 
-	static JSONObject getJSON(String endpoint, String params) throws IOException{
-		
+	public static JSONObject getJSON(String endpoint, String params) throws IOException, JSONException{
 		JSONObject jObj;
 		String json = get(endpoint, params);
-		
-		try {
-            jObj = new JSONObject(json);
-        } catch (JSONException e) {
-        	jObj = new JSONObject();
-            Log.e("JSON Parser", "Error parsing data " + e.toString());
-        }
+        jObj = new JSONObject(json);
+		return jObj;
+	}
+
+	public static JSONObject getJSON(String endpoint,
+			HashMap<String, String> params) throws IOException, JSONException{
+
+		JSONObject jObj;
+		String json = get(endpoint, params);
+		Log.d(TAG, json);
+        jObj = new JSONObject(json);
 		return jObj;
 	}
 	

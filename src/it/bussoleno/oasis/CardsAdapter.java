@@ -1,7 +1,6 @@
-package it.oasis.bussoleno;
+package it.bussoleno.oasis;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,19 +16,16 @@ public class CardsAdapter extends BaseAdapter {
 
 	private LayoutInflater mInflater;
     private Bitmap mIcon;
-
-    private ArrayList<Card> cards;
+    private MyApplication mContext;
     
-    public CardsAdapter(Context context, ArrayList<Card> aaa) {
-        // Cache the LayoutInflate to avoid asking for a new one each time.
+    
+    public CardsAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
-        cards = aaa;
-        // Icons bound to the rows.
-        //mIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.bkg_card);
+        mContext = (MyApplication)context.getApplicationContext();
     }
 
     public int getCount() {
-        return cards.size();
+        return mContext.cards.size();
     }
 
     /**
@@ -41,14 +37,9 @@ public class CardsAdapter extends BaseAdapter {
      * @see android.widget.ListAdapter#getItem(int)
      */
     public Object getItem(int position) {
-        return cards.get(position);
+        return mContext.cards.get(position);
     }
-
-    /**
-     * Use the array index as a unique id.
-     *
-     * @see android.widget.ListAdapter#getItemId(int)
-     */
+    
     public long getItemId(int position) {
         return position;
     }
@@ -73,8 +64,8 @@ public class CardsAdapter extends BaseAdapter {
             // Creates a ViewHolder and store references to the two children views
             // we want to bind data to.
             holder = new ViewHolder();
-            holder.first = (TextView) convertView.findViewById(R.id.first);
-            holder.last = (TextView) convertView.findViewById(R.id.last);
+            holder.desc = (TextView) convertView.findViewById(R.id.desc);
+            holder.fullName = (TextView) convertView.findViewById(R.id.fullname);
             //holder.icon = (ImageView) convertView.findViewById(R.id.icon);
 
             convertView.setTag(holder);
@@ -85,15 +76,16 @@ public class CardsAdapter extends BaseAdapter {
         }
 
         // Bind the data efficiently with the holder.
-        holder.first.setText(cards.get(position).mFirst);
+        holder.desc.setText(mContext.cards.get(position).mDesc);
+        holder.fullName.setText(mContext.cards.get(position).mFullname);
         //holder.icon.setImageBitmap((position & 1) == 1 ? mIcon1 : mIcon2);
 
         return convertView;
     }
 
     static class ViewHolder {
-        TextView last;
-        TextView first;
+        TextView fullName;
+        TextView desc;
         ImageView icon;
     }
 }

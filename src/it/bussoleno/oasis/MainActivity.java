@@ -1,16 +1,12 @@
-package it.oasis.bussoleno;
+package it.bussoleno.oasis;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -20,33 +16,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 
 public class MainActivity extends FragmentActivity {
 
-	private static final String ACTION_LOGIN = "http://www.google.it";
-	private static final String ACTION_GETRESOURCE = "http://www.google.it";
-
-	private static final String TAG_ID = "id";
-	private static final String TAG_DESC = "description";
-	private static final String TAG_NAME = "name";
-	private static final String TAG_DETAILS = "details";
-	private static final String TAG_KIND = "kind";
-	private static final String TAG_VALUE = "value";
-
-	private static final String TAG_FIRST = "first";
-	private static final String TAG_LAST = "last";
-	
 	private static final String CARDS_FRAGMENT = "cards_fragment";
+
 	Dialog login;
 	Dialog confirm;
 
 	CardsListFragment listFragment = null;
 
 	LoginTask mLoginTask = null;
-	//public static final int REQUEST_CODE = 0x0bf7c0de;
+	// public static final int REQUEST_CODE = 0x0bf7c0de;
 	public static final int REQUEST_CODE = 1;
 
 	@Override
@@ -55,18 +37,12 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 
 		if (findViewById(R.id.fragment_container) != null) {
-			ArrayList<Card> aaa = new ArrayList<Card>();
-			aaa.add(new Card("pinco1","pallo1",null));
-			aaa.add(new Card("pinco2","pallo2",null));
-			aaa.add(new Card("pinco3","pallo3",null));
-			aaa.add(new Card("pinco4","pallo4",null));
-			CardsAdapter cards = new CardsAdapter(this, aaa);
 			listFragment = CardsListFragment.newInstance();
-			listFragment.setListAdapter(cards);
 			getSupportFragmentManager().beginTransaction()
-			.add(R.id.fragment_container, listFragment, CARDS_FRAGMENT).commit();
+					.add(R.id.fragment_container, listFragment, CARDS_FRAGMENT)
+					.commit();
 		}
-		
+
 		login = new Dialog(this, android.R.style.Theme_Light_NoTitleBar);
 		login.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		login.setCancelable(false);
@@ -95,9 +71,12 @@ public class MainActivity extends FragmentActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		CardsAdapter cardsAdapter = new CardsAdapter(this);
+		listFragment.setListAdapter(cardsAdapter);
+		listFragment.getListView().setDividerHeight(0);
 	}
-	private void submitLogin(String user, String pwd) {
 
+	private void submitLogin(String user, String pwd) {
 		mLoginTask = new LoginTask();
 		mLoginTask.execute(user, pwd);
 	}
@@ -111,11 +90,11 @@ public class MainActivity extends FragmentActivity {
 
 	public void scanCode(View v) {
 		System.out.println("Let's scan!");
-		Intent intentScan = new Intent(
-				"com.phonegap.plugins.barcodescanner.SCAN");
-		intentScan.addCategory(Intent.CATEGORY_DEFAULT);
 
-		startActivityForResult(intentScan, REQUEST_CODE);
+		Intent intentScan = new Intent("it.oasis.bussoleno.SCAN");
+
+		//startActivityForResult(intentScan, REQUEST_CODE);
+		startActivity(intentScan);
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -123,57 +102,6 @@ public class MainActivity extends FragmentActivity {
 			if (resultCode == Activity.RESULT_OK) {
 				System.out.println(intent.getStringExtra("SCAN_RESULT"));
 				System.out.println(intent.getStringExtra("SCAN_RESULT_FORMAT"));
-				new AsyncTask<String, Void, JSONObject>() {
-
-					protected void onPreExecute() {
-						confirm = new Dialog(MainActivity.this,
-								R.style.PauseDialog);
-						confirm.requestWindowFeature(Window.FEATURE_NO_TITLE);
-						confirm.getWindow().setBackgroundDrawable(
-								new ColorDrawable(
-										android.graphics.Color.TRANSPARENT));
-						confirm.setCancelable(true);
-						confirm.setContentView(R.layout.dialog_confirm);
-						WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-						lp.copyFrom(confirm.getWindow().getAttributes());
-						lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-						lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-						confirm.getWindow().setAttributes(lp);
-						confirm.show();
-
-					};
-
-					@Override
-					protected JSONObject doInBackground(String... params) {
-						JSONObject response = null;
-						try {
-							response = ServerUtilities.getJSON(
-									ACTION_GETRESOURCE, "");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						return response;
-					}
-
-					@Override
-					protected void onPostExecute(JSONObject result) {
-						if (true || result != null) {
-							if (confirm != null) {
-								confirm.findViewById(R.id.footer)
-										.setVisibility(View.VISIBLE);
-								confirm.findViewById(R.id.text1).setVisibility(
-										View.VISIBLE);
-								confirm.findViewById(R.id.text2).setVisibility(
-										View.VISIBLE);
-								confirm.findViewById(R.id.text3).setVisibility(
-										View.VISIBLE);
-								confirm.findViewById(R.id.loading)
-										.setVisibility(View.INVISIBLE);
-							}
-						}
-					};
-
-				}.execute("some nasty json");
 			} else if (resultCode == Activity.RESULT_CANCELED) {
 				System.out.println("RESULT_CANCELED");
 			} else {
@@ -200,8 +128,10 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		protected Void doInBackground(String... paramArrayOfParams) {
 			try {
-				ServerUtilities.getJSON(ACTION_LOGIN, "");
+				ServerUtilities.getJSON(ServerUtilities.ACTION_LOGIN, "");
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			return null;

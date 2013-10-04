@@ -1,61 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/diag_confirm"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bkg_card"
+    android:background="@drawable/card_bkg"
     android:orientation="vertical" >
-    <TextView
-        android:id="@+id/textHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Dettagli"
-        android:background="@color/midnight_blue"
-        /> <!-- android:visibility="gone"  -->
-    <TextView
-        android:id="@+id/text1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Mario"
-        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/text2"
+   <LinearLayout
+        android:id="@+id/wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bianchi"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/text3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/dummy_desc"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:visibility="gone" >
 
-        <Button
-            android:id="@+id/btn_ko"
-            style="@style/card_button"
-            android:background="@drawable/cancel"
-            android:text="@string/btn_ko"
-            android:layout_weight="1"
-            android:layout_margin="10dp"/>
-        
-        <Button
-            android:id="@+id/btn_ok"
-            style="@style/card_button"
-            android:background="@drawable/confirm"
-            android:text="@string/btn_ok"
-            android:layout_weight="1"
-            android:layout_margin="10dp" />
-    
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/midnight_blue"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/text3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dummy_desc" />
+
+        <LinearLayout
+            android:id="@+id/footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_ko"
+                style="@style/card_button"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/cancel"
+                android:text="@string/btn_ko" />
+
+            <Button
+                android:id="@+id/btn_ok"
+                style="@style/card_button"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/confirm"
+                android:text="@string/btn_ok" />
+        </LinearLayout>
     </LinearLayout>
 
     <ProgressBar

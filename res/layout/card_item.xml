@@ -2,24 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/card" >
-        <TextView 
+    android:background="@drawable/card"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/fullname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingBottom="2dp"
         android:paddingLeft="10dp"
-        android:id="@+id/first"
-        
-        ></TextView>
-        <TextView 
+        android:paddingTop="10dp"
+        android:textColor="@color/darkgray"
+        android:textSize="20sp" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="10dp"
-        android:id="@+id/last"
-        
-        ></TextView>
+        android:paddingTop="2dp"
+        android:textColor="@color/lightgray"
+        android:textSize="16sp" >
+    </TextView>
+
 </LinearLayout>

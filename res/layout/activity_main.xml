@@ -1,8 +1,9 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
+    android:orientation="vertical"
     tools:context=".MainActivity" >
 
     <LinearLayout
@@ -10,7 +11,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="5dp"
         android:paddingTop="5dp"
-        android:background="@color/midnight_blue"
+        android:background="@drawable/header_bkg"
         android:orientation="horizontal" >
 
         <TextView
@@ -37,10 +38,17 @@
             android:onClick="scanCode" />
     </LinearLayout>
 
-    <FrameLayout
+<!--     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="65dp" />
+        android:layout_marginTop="65dp" /> -->
+        
+        <android.support.v4.view.ViewPager
+		    xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:id="@+id/pager"
+		    android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1" />
 
-</RelativeLayout>
+</LinearLayout>

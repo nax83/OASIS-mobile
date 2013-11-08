@@ -908,7 +908,7 @@ public class CaptureActivity extends Activity implements
 				ServerUtilities.post("http://" + mEndPoint + "/presences", params);
 				//ServerUtilities.post("http://192.168.1.5:3000/presences", params);
 				((MyApplication) CaptureActivity.this
-						.getApplication()).cards.add(0, card);
+						.getApplication()).addToCheckedListAt(0, card);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} 

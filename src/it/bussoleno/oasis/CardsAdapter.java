@@ -25,7 +25,7 @@ public class CardsAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return mContext.cards.size();
+        return mContext.getCheckedInListSize();
     }
 
     /**
@@ -37,7 +37,7 @@ public class CardsAdapter extends BaseAdapter {
      * @see android.widget.ListAdapter#getItem(int)
      */
     public Object getItem(int position) {
-        return mContext.cards.get(position);
+        return mContext.getCardFromCheckedList(position);
     }
     
     public long getItemId(int position) {
@@ -76,8 +76,8 @@ public class CardsAdapter extends BaseAdapter {
         }
 
         // Bind the data efficiently with the holder.
-        holder.desc.setText(mContext.cards.get(position).mDesc);
-        holder.fullName.setText(mContext.cards.get(position).mFullname);
+        holder.desc.setText(mContext.getCardFromCheckedList(position).mDesc);
+        holder.fullName.setText(mContext.getCardFromCheckedList(position).mFullname);
         //holder.icon.setImageBitmap((position & 1) == 1 ? mIcon1 : mIcon2);
 
         return convertView;
@@ -86,6 +86,6 @@ public class CardsAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView fullName;
         TextView desc;
-        ImageView icon;
+        //ImageView icon;
     }
 }

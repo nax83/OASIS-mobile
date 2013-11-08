@@ -122,7 +122,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 	private String characterSet;
 	private HistoryManager historyManager;
 	private InactivityTimer inactivityTimer;
-	private BeepManager beepManager;
+	//private BeepManager beepManager;
 	private AmbientLightManager ambientLightManager;
 
 	private String mEndPoint;
@@ -151,7 +151,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		historyManager = new HistoryManager(this);
 		historyManager.trimHistory();
 		inactivityTimer = new InactivityTimer(this);
-		beepManager = new BeepManager(this);
+		//beepManager = new BeepManager(this);
 		ambientLightManager = new AmbientLightManager(this);
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -206,7 +206,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 			surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		}
 
-		beepManager.updatePrefs();
+		//beepManager.updatePrefs();
 		ambientLightManager.start(cameraManager);
 
 		inactivityTimer.onResume();
@@ -453,7 +453,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 			historyManager.addHistoryItem(rawResult, resultHandler);
 			// Then not from history, so beep/vibrate and we have an image to
 			// draw on
-			beepManager.playBeepSoundAndVibrate();
+			//beepManager.playBeepSoundAndVibrate();
 			drawResultPoints(barcode, scaleFactor, rawResult);
 		}
 		source = IntentSource.NONE;
@@ -851,7 +851,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		viewfinderView.drawViewfinder();
 	}
 	
-	private class ConfirmTask extends AsyncTask<Card, Void, Void> {
+	private class ConfirmTask extends AsyncTask<Card, Void, Card> {
 
 		@Override
 		protected void onPreExecute() {
@@ -860,24 +860,24 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		}
 
 		@Override
-		protected Void doInBackground(Card... paramArrayOfParams) {
+		protected Card doInBackground(Card... paramArrayOfParams) {
 			Card card = paramArrayOfParams[0];
 			try {
 				HashMap<String, String>params = new HashMap<String, String>();
 				params.put("badge_id", card.mId);
 				ServerUtilities.post(mEndPoint + "/presences", params);
 				//ServerUtilities.post("http://192.168.1.5:3000/presences", params);
-				((MyApplication) MyCaptureActivity.this
-						.getApplication()).cards.add(0, card);
+
 			} catch (IOException e) {
 				e.printStackTrace();
-			} 
+			}
 			
-			return null;
+			return card;
 		}
 
-		protected void onPostExecute(Void result) {
-			// TODO handle response
+		protected void onPostExecute(Card card) {
+			((MyApplication) MyCaptureActivity.this
+					.getApplication()).addToCheckedListAt(0, card);
 		};
 	}
 

@@ -1,6 +1,7 @@
 package it.bussoleno.oasis;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.json.JSONException;
 
@@ -10,6 +11,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -22,10 +29,16 @@ public class MainActivity extends FragmentActivity {
 
 	private static final String CARDS_FRAGMENT = "cards_fragment";
 
+    private static final int NUM_PAGES = 2;
+    private static final int LIST_CHECKEDIN = 0;
+    private static final int LIST_TOBECHECKEDIN = 1;
+    
+    private ViewPager mPager;
+    private ScreenSlidePagerAdapter mPagerAdapter;
+    private HashMap<Integer,Fragment> mPageReferenceMap = new HashMap<Integer, Fragment>();
+	
 	Dialog login;
 	Dialog confirm;
-
-	CardsListFragment listFragment = null;
 
 	LoginTask mLoginTask = null;
 	// public static final int REQUEST_CODE = 0x0bf7c0de;
@@ -36,12 +49,17 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		if (findViewById(R.id.fragment_container) != null) {
-			listFragment = CardsListFragment.newInstance();
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, listFragment, CARDS_FRAGMENT)
-					.commit();
-		}
+//		if (findViewById(R.id.fragment_container) != null) {
+//			listFragment = CardsListFragment.newInstance();
+//			getSupportFragmentManager().beginTransaction()
+//					.add(R.id.fragment_container, listFragment, CARDS_FRAGMENT)
+//					.commit();
+//		}
+		
+		 // Instantiate a ViewPager and a PagerAdapter.
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
 
 		login = new Dialog(this, android.R.style.Theme_Light_NoTitleBar);
 		login.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -72,8 +90,14 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		CardsAdapter cardsAdapter = new CardsAdapter(this);
-		listFragment.setListAdapter(cardsAdapter);
-		listFragment.getListView().setDividerHeight(0);
+		//listFragment.setListAdapter(cardsAdapter);
+		//listFragment.getListView().setDividerHeight(0);
+		Fragment f = mPagerAdapter.getFragment(LIST_CHECKEDIN);
+		if(f != null){
+			System.out.println("List not null");
+			((ListFragment)f).setListAdapter(cardsAdapter);
+			((ListFragment)f).getListView().setDividerHeight(0);
+		}
 	}
 
 	private void submitLogin(String user, String pwd) {
@@ -143,5 +167,34 @@ public class MainActivity extends FragmentActivity {
 				login.dismiss();
 		};
 	}
+	/**
+     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
+     * sequence.
+     */
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
+        @Override
+        public  Fragment getItem(int position) {
+        	Fragment fg;
+        	if(position==LIST_CHECKEDIN){
+        		fg = CardsListFragment.newInstance();
+        	}else{
+        		fg = CardsListFragment.newInstance();
+        	}
+        	mPageReferenceMap.put(position, fg);
+        	return fg;
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+        
+    	public Fragment getFragment(int key) {
+    	    return mPageReferenceMap.get(key);
+    	}
+    }
 }

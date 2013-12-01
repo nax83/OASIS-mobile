@@ -1,5 +1,7 @@
 package it.bussoleno.oasis;
 
+import it.bussoleno.oasis.httpservice.HttpService;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -8,8 +10,9 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -25,9 +28,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity{
 
-	private static final String CARDS_FRAGMENT = "cards_fragment";
+	//private static final String CARDS_FRAGMENT = "cards_fragment";
 
     private static final int NUM_PAGES = 2;
     private static final int LIST_CHECKEDIN = 0;
@@ -40,9 +43,10 @@ public class MainActivity extends FragmentActivity {
 	Dialog login;
 	Dialog confirm;
 
-	LoginTask mLoginTask = null;
 	// public static final int REQUEST_CODE = 0x0bf7c0de;
 	public static final int REQUEST_CODE = 1;
+	
+	private MyResultReceiver resultReceiver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,8 @@ public class MainActivity extends FragmentActivity {
 		login.setCancelable(false);
 		login.setContentView(R.layout.dialog_login);
 
+		resultReceiver = new MyResultReceiver(new Handler());
+		
 		Button b = (Button) login.findViewById(R.id.btn_login);
 		b.setOnClickListener(new View.OnClickListener() {
 
@@ -82,7 +88,7 @@ public class MainActivity extends FragmentActivity {
 
 		login.getWindow().setAttributes(lp);
 		login.show();
-
+		
 	}
 
 	@Override
@@ -101,8 +107,18 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void submitLogin(String user, String pwd) {
-		mLoginTask = new LoginTask();
-		mLoginTask.execute(user, pwd);
+		Button b = (Button) login.findViewById(R.id.btn_login);
+		b.setVisibility(View.GONE);
+		ProgressBar pb = (ProgressBar) login.findViewById(R.id.loading);
+		pb.setVisibility(View.VISIBLE);
+		EditText et1 = (EditText) login.findViewById(R.id.pwd_edit);
+		EditText et2 = (EditText) login.findViewById(R.id.user_edit);
+		et1.setEnabled(false);
+		et2.setEnabled(false);
+		Intent intent = new Intent(this, HttpService.class);
+		intent.putExtra(HttpService.REQTYPE, HttpService.REQLOGIN);
+		intent.putExtra("receiver", resultReceiver);
+		startService(intent);
 	}
 
 	@Override
@@ -134,43 +150,21 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	private class LoginTask extends AsyncTask<String, Void, Void> {
+	class MyResultReceiver extends ResultReceiver {
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			Button b = (Button) login.findViewById(R.id.btn_login);
-			b.setVisibility(View.GONE);
-			ProgressBar pb = (ProgressBar) login.findViewById(R.id.loading);
-			pb.setVisibility(View.VISIBLE);
-			EditText et1 = (EditText) login.findViewById(R.id.pwd_edit);
-			EditText et2 = (EditText) login.findViewById(R.id.user_edit);
-			et1.setEnabled(false);
-			et2.setEnabled(false);
+		public MyResultReceiver(Handler handler) {
+			super(handler);
+			// TODO Auto-generated constructor stub
 		}
 
 		@Override
-		protected Void doInBackground(String... paramArrayOfParams) {
-			try {
-				ServerUtilities.getJSON(ServerUtilities.ACTION_LOGIN, "");
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		protected void onPostExecute(Void result) {
-			// TODO handle response
-			if (login != null && login.isShowing())
+		protected void onReceiveResult(int resultCode, Bundle resultData) {
+			if(resultCode == HttpService.LOGIN_OK){
 				login.dismiss();
-		};
+			}
+		}
 	}
-	/**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
-     */
+
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);

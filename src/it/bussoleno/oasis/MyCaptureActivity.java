@@ -6,8 +6,6 @@ import com.google.zxing.Result;
 import com.google.zxing.ResultMetadataType;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.*;
-import com.google.zxing.client.android.CaptureActivityHandler;
-import com.google.zxing.client.android.ViewfinderView;
 import com.google.zxing.client.android.camera.CameraManager;
 import com.google.zxing.client.android.history.HistoryActivity;
 import com.google.zxing.client.android.history.HistoryItem;
@@ -29,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,6 +46,8 @@ import it.bussoleno.oasis.Card;
 import it.bussoleno.oasis.MyApplication;
 import it.bussoleno.oasis.R;
 import it.bussoleno.oasis.ServerUtilities;
+import it.bussoleno.oasis.MainActivity.MyResultReceiver;
+import it.bussoleno.oasis.httpservice.HttpService;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -54,10 +55,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * This activity opens the camera and does the actual scanning on a background
@@ -72,17 +69,6 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		SurfaceHolder.Callback {
 
 	private static final String TAG = CaptureActivity.class.getSimpleName();
-
-	private static final String TAG_ID = "id";
-	private static final String TAG_DESC = "description";
-	private static final String TAG_NAME = "name";
-	private static final String TAG_DETAILS = "details";
-	private static final String TAG_KIND = "kind";
-	private static final String TAG_KIND_FAMILYNAME = "family_name";
-	private static final String TAG_KIND_FIRSTNAME = "first_name";
-	private static final String TAG_KIND_DESCRIPTION = "description";
-	
-	private static final String TAG_VALUE = "value";
 
 	private static final String TAG_FIRST = "first";
 	private static final String TAG_LAST = "last";
@@ -122,11 +108,12 @@ public final class MyCaptureActivity extends CaptureActivity implements
 	private String characterSet;
 	private HistoryManager historyManager;
 	private InactivityTimer inactivityTimer;
-	//private BeepManager beepManager;
+	// private BeepManager beepManager;
 	private AmbientLightManager ambientLightManager;
 
 	private String mEndPoint;
-
+	private MyCAResultReceiver resultReceiver;
+	
 	ViewfinderView getViewfinderView() {
 		return viewfinderView;
 	}
@@ -147,21 +134,23 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.capture);
 
+		resultReceiver = new MyCAResultReceiver(new Handler());
+		
 		hasSurface = false;
 		historyManager = new HistoryManager(this);
 		historyManager.trimHistory();
 		inactivityTimer = new InactivityTimer(this);
-		//beepManager = new BeepManager(this);
+		// beepManager = new BeepManager(this);
 		ambientLightManager = new AmbientLightManager(this);
 
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
 		resultView = findViewById(R.id.result_view);
 		// attach handlers to resultView btns
-				
+
 		View btn_close = findViewById(R.id.btn_finish);
 		btn_close.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				finish();
@@ -206,7 +195,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 			surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		}
 
-		//beepManager.updatePrefs();
+		// beepManager.updatePrefs();
 		ambientLightManager.start(cameraManager);
 
 		inactivityTimer.onResume();
@@ -453,7 +442,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 			historyManager.addHistoryItem(rawResult, resultHandler);
 			// Then not from history, so beep/vibrate and we have an image to
 			// draw on
-			//beepManager.playBeepSoundAndVibrate();
+			// beepManager.playBeepSoundAndVibrate();
 			drawResultPoints(barcode, scaleFactor, rawResult);
 		}
 		source = IntentSource.NONE;
@@ -542,151 +531,62 @@ public final class MyCaptureActivity extends CaptureActivity implements
 			ResultHandler resultHandler, Bitmap barcode) {
 		statusView.setVisibility(View.GONE);
 		viewfinderView.setVisibility(View.GONE);
-		
-		//store result to post future actions
+
+		// store result to post future actions
 		mEndPoint = String.valueOf(rawResult);
-		
+
 		System.out.println("endPoint is " + mEndPoint);
-		//TODO endPoint null??
-		new AsyncTask<String, Void, JSONObject>() {
 
-			protected void onPreExecute() {
-				confirm = new Dialog(MyCaptureActivity.this, R.style.PauseDialog);
-				confirm.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				confirm.getWindow().setBackgroundDrawable(
-						new ColorDrawable(android.graphics.Color.TRANSPARENT));
-				confirm.setCancelable(true);
-				confirm.setContentView(R.layout.dialog_confirm);
-				WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-				lp.copyFrom(confirm.getWindow().getAttributes());
-				lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-				lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-				confirm.getWindow().setAttributes(lp);
+		confirm = new Dialog(MyCaptureActivity.this, R.style.PauseDialog);
+		confirm.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		confirm.getWindow().setBackgroundDrawable(
+				new ColorDrawable(android.graphics.Color.TRANSPARENT));
+		confirm.setCancelable(true);
+		confirm.setContentView(R.layout.dialog_confirm);
+		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+		lp.copyFrom(confirm.getWindow().getAttributes());
+		lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+		lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+		confirm.getWindow().setAttributes(lp);
 
-				Button btn_ko = (Button) confirm.findViewById(R.id.btn_ko);
-				btn_ko.setOnClickListener(new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						restartScan();
-					}
-				});
-				
-				confirm.setOnKeyListener(new Dialog.OnKeyListener() {
-					
-					@Override
-					public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-						switch (keyCode) {
-						case KeyEvent.KEYCODE_BACK:
-							dialog.dismiss();
-							restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
-							return true;
-						default:	
-							return false;
-						}
-					}
-				});
-				
-				confirm.show();
-			};
+		Button btn_ko = (Button) confirm.findViewById(R.id.btn_ko);
+		btn_ko.setOnClickListener(new View.OnClickListener() {
 
 			@Override
-			protected JSONObject doInBackground(String... domains) {
-				JSONObject response = null;
-				String domain = domains[0];
-				System.out.println("domain is " + domain);
-				try {
-					response = ServerUtilities.getJSON(domain, "");
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				return response;
+			public void onClick(View v) {
+				restartScan();
 			}
+		});
+
+		confirm.setOnKeyListener(new Dialog.OnKeyListener() {
 
 			@Override
-			protected void onPostExecute(JSONObject result) {
-				System.out.println("parsing result");
-				if (result != null) {
-					String first = "";
-					String last = "";
-					String desc = "";
-					String id = "";
-					JSONArray details;
-					try {
-						id = result.getString(TAG_ID);
-						details = result.getJSONArray(TAG_DETAILS);
-						for(int i=0; i<details.length();i++){
-							JSONObject tmp = (JSONObject) details.get(i);
-							try{
-								String kind = tmp.getString(TAG_KIND);
-								if(TAG_KIND_FAMILYNAME.equals(kind))
-									first = tmp.getString(TAG_VALUE);
-								if(TAG_KIND_FIRSTNAME.equals(kind))
-									last = tmp.getString(TAG_VALUE);
-								if(TAG_KIND_DESCRIPTION.equals(kind))
-									desc = tmp.getString(TAG_VALUE);
-							}catch (Exception e) {
-								System.out.println("index: " + i);
-							}
-						}
-						if("".equals(first)||"".equals(last)||"".equals(desc)) {
-							//TODO: handle error
-							System.out.println("Error parsing first last");
-						}
-
-						first = (""+first.charAt(0)).toUpperCase()+first.substring(1,first.length());
-						last = (""+last.charAt(0)).toUpperCase()+last.substring(1, last.length());
-
-						final String d = desc;
-						final String ide = id;
-						final String fullname = first + " " + last;
-						
-						Button btn_ok = (Button) confirm
-								.findViewById(R.id.btn_ok);
-						
-						btn_ok.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-								Card card = new Card(ide, fullname,
-										d);
-
-								new ConfirmTask().execute(card);
-								restartScan();
-							}
-						});
-						if (confirm != null) {
-							confirm.findViewById(R.id.wrapper).setVisibility(
-									View.VISIBLE);
-							((TextView)confirm.findViewById(R.id.text1)).setText(
-									fullname);
-							((TextView)confirm.findViewById(R.id.text3)).setText(
-									d);
-							confirm.findViewById(R.id.loading).setVisibility(
-									View.INVISIBLE);
-						}
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}else{
-					System.out.println("Result is null");
+			public boolean onKey(DialogInterface dialog, int keyCode,
+					KeyEvent event) {
+				switch (keyCode) {
+				case KeyEvent.KEYCODE_BACK:
+					dialog.dismiss();
+					restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
+					return true;
+				default:
+					return false;
 				}
-			};
-
-		}.execute(mEndPoint);
-
+			}
+		});
+		Intent intent = new Intent(this, HttpService.class);
+		intent.putExtra(HttpService.REQTYPE, HttpService.REQDETAILS);
+		intent.putExtra("receiver", resultReceiver);
+		intent.putExtra(HttpService.RESOURCE_URL, mEndPoint);
+		startService(intent);
+		confirm.show();
 	}
 
-	private void restartScan(){
+	private void restartScan() {
 		confirm.dismiss();
 		confirm = null;
 		restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
 	}
-	
+
 	// Briefly show the contents of the barcode, then handle the result outside
 	// Barcode Scanner.
 	private void handleDecodeExternally(Result rawResult,
@@ -841,7 +741,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 
 	private void resetStatusView() {
 		resultView.setVisibility(View.GONE);
-		statusView.setText(""); //R.string.msg_default_status
+		statusView.setText(""); // R.string.msg_default_status
 		statusView.setVisibility(View.VISIBLE);
 		viewfinderView.setVisibility(View.VISIBLE);
 		lastResult = null;
@@ -850,36 +750,47 @@ public final class MyCaptureActivity extends CaptureActivity implements
 	public void drawViewfinder() {
 		viewfinderView.drawViewfinder();
 	}
-	
-	private class ConfirmTask extends AsyncTask<Card, Void, Card> {
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			
+	class MyCAResultReceiver extends ResultReceiver {
+
+		public MyCAResultReceiver(Handler handler) {
+			super(handler);
+			// TODO Auto-generated constructor stub
 		}
 
 		@Override
-		protected Card doInBackground(Card... paramArrayOfParams) {
-			Card card = paramArrayOfParams[0];
-			try {
-				HashMap<String, String>params = new HashMap<String, String>();
-				params.put("badge_id", card.mId);
-				ServerUtilities.post(mEndPoint + "/presences", params);
-				//ServerUtilities.post("http://192.168.1.5:3000/presences", params);
+		protected void onReceiveResult(int resultCode, Bundle resultData) {
+			if (resultCode == HttpService.DETAILS_OK) {
+				final Card card = resultData.getParcelable("card");
+				Button btn_ok = (Button) confirm.findViewById(R.id.btn_ok);
+				btn_ok.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(MyCaptureActivity.this, HttpService.class);
+						intent.putExtra(HttpService.REQTYPE, HttpService.REQCONFIRM);
+						intent.putExtra("receiver", resultReceiver);
+						intent.putExtra(HttpService.RESOURCE_URL, mEndPoint);
+						intent.putExtra("card", card);
+						startService(intent);
+						restartScan();
+					}
+				});
+				if (confirm != null) {
+					confirm.findViewById(R.id.wrapper).setVisibility(
+							View.VISIBLE);
+					((TextView) confirm.findViewById(R.id.text1))
+							.setText(card.mFullname);
+					((TextView) confirm.findViewById(R.id.text3)).setText(card.mDesc);
+					confirm.findViewById(R.id.loading).setVisibility(
+							View.INVISIBLE);
+				}
 
-			} catch (IOException e) {
-				e.printStackTrace();
+			}else if (resultCode == HttpService.CONFIRM_OK) {
+				Card card = resultData.getParcelable("card");
+				((MyApplication) MyCaptureActivity.this.getApplication())
+				.addToCheckedListAt(0, card);
 			}
-			
-			return card;
 		}
-
-		protected void onPostExecute(Card card) {
-			((MyApplication) MyCaptureActivity.this
-					.getApplication()).addToCheckedListAt(0, card);
-		};
 	}
 
-	
 }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.bussoleno.oasis"
     android:installLocation="auto"
@@ -233,6 +232,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="it.bussoleno.oasis.httpservice.HttpService"
+            android:icon="@drawable/launcher_icon"
+            android:label="@string/service_name" >
+        </service>
     </application>
 
 </manifest>

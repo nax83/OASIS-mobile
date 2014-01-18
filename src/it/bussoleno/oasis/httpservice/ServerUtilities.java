@@ -1,4 +1,4 @@
-package it.bussoleno.oasis;
+package it.bussoleno.oasis.httpservice;
 
 import android.util.Log;
 
@@ -23,10 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public final class ServerUtilities {
-	
-	public static final String DOMAIN = "http://www.google.it";
-	public static final String ACTION_LOGIN = DOMAIN + "/login";
-	public static final String ACTION_GETRESOURCE = DOMAIN + "/getresource";
 	
 	private static final String TAG = "ServerUtilities";
 

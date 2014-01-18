@@ -1,21 +1,17 @@
 package it.bussoleno.oasis;
 
-import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CardsAdapter extends BaseAdapter {
 
 	private LayoutInflater mInflater;
-    private Bitmap mIcon;
     private MyApplication mContext;
     
     
@@ -66,7 +62,6 @@ public class CardsAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.desc = (TextView) convertView.findViewById(R.id.desc);
             holder.fullName = (TextView) convertView.findViewById(R.id.fullname);
-            //holder.icon = (ImageView) convertView.findViewById(R.id.icon);
 
             convertView.setTag(holder);
         } else {
@@ -78,7 +73,6 @@ public class CardsAdapter extends BaseAdapter {
         // Bind the data efficiently with the holder.
         holder.desc.setText(mContext.getCardFromCheckedList(position).mDesc);
         holder.fullName.setText(mContext.getCardFromCheckedList(position).mFullname);
-        //holder.icon.setImageBitmap((position & 1) == 1 ? mIcon1 : mIcon2);
 
         return convertView;
     }
@@ -86,6 +80,5 @@ public class CardsAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView fullName;
         TextView desc;
-        //ImageView icon;
     }
 }

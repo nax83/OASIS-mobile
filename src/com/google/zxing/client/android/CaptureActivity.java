@@ -69,7 +69,7 @@ import it.bussoleno.oasis.CardsAdapter;
 import it.bussoleno.oasis.MainActivity;
 import it.bussoleno.oasis.MyApplication;
 import it.bussoleno.oasis.R;
-import it.bussoleno.oasis.ServerUtilities;
+import it.bussoleno.oasis.httpservice.ServerUtilities;
 
 import java.io.IOException;
 import java.text.DateFormat;

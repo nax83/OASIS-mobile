@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import it.bussoleno.oasis.Card;
-import it.bussoleno.oasis.ServerUtilities;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Binder;
@@ -91,7 +90,7 @@ public class HttpService extends IntentService {
 		switch (req_type) {
 		case REQLOGIN:
 			try {
-				ServerUtilities.getJSON(ServerUtilities.ACTION_LOGIN, "");
+				ServerUtilities.getJSON(Config.ACTION_LOGIN, "");
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -154,14 +153,13 @@ public class HttpService extends IntentService {
 		case REQCONFIRM:
 			
 			Card card = intent.getParcelableExtra("card");
-			String mEndPoint = intent.getStringExtra(RESOURCE_URL);
 			try {
 				HashMap<String, String> params = new HashMap<String, String>();
 				params.put("badge_id", card.mId);
-				ServerUtilities.post(mEndPoint + "/presences", params);
-				// ServerUtilities.post("http://192.168.1.5:3000/presences",
-				// params);
-				resultReceiver.send(CONFIRM_OK, null);
+				ServerUtilities.post(Config.ACTION_ADDPRESENCE, params);
+				Bundle ret = new Bundle();
+				ret.putParcelable("card", card);
+				resultReceiver.send(CONFIRM_OK, ret);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

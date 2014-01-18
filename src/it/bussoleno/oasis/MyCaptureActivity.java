@@ -23,7 +23,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,14 +44,11 @@ import android.widget.Toast;
 import it.bussoleno.oasis.Card;
 import it.bussoleno.oasis.MyApplication;
 import it.bussoleno.oasis.R;
-import it.bussoleno.oasis.ServerUtilities;
-import it.bussoleno.oasis.MainActivity.MyResultReceiver;
 import it.bussoleno.oasis.httpservice.HttpService;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 

@@ -11,10 +11,17 @@ public class MyApplication extends Application {
 	
 	public MyApplication(){
 		super();
-		checkedInList.add(new Card("0", "FirstName LastName", "this is a desc"));
+		checkedInList.add(new Card("0", "FirstName LastName", "this is a desc", false));
 	}
 	
-	public void addToWaitList(Card c){
+	public void addToList(Card c){
+		System.out.println("is owner: " + c.mIsOwner);
+		if(c.mIsOwner){
+			addToCheckedList(c);
+		}else addToWaitList(c);
+	}
+	
+	private void addToWaitList(Card c){
 		waitingList.add(c);
 	}
 	
@@ -30,8 +37,8 @@ public class MyApplication extends Application {
 		return waitingList.size();
 	}
 	
-	public void addToCheckedListAt(int index, Card c){
-		checkedInList.add(index, c);
+	private void addToCheckedList(Card c){
+		checkedInList.add(0, c);
 	}
 	
 	public Card removeFromCheckedList(int index){

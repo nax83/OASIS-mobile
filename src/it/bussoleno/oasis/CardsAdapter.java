@@ -2,7 +2,6 @@ package it.bussoleno.oasis;
 
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +12,17 @@ public class CardsAdapter extends BaseAdapter {
 
 	private LayoutInflater mInflater;
     private MyApplication mContext;
-    
-    
-    public CardsAdapter(Context context) {
+    private int mType;
+    public CardsAdapter(Context context, int type) {
         mInflater = LayoutInflater.from(context);
         mContext = (MyApplication)context.getApplicationContext();
+        mType = type;
     }
 
     public int getCount() {
-        return mContext.getCheckedInListSize();
+    	if(mType == 0)
+    		return mContext.getCheckedInListSize();
+    	else return mContext.getWaitListSize();
     }
 
     /**
@@ -33,7 +34,9 @@ public class CardsAdapter extends BaseAdapter {
      * @see android.widget.ListAdapter#getItem(int)
      */
     public Object getItem(int position) {
-        return mContext.getCardFromCheckedList(position);
+    	if(mType == 0)
+    		return mContext.getCardFromCheckedList(position);
+    	else return mContext.getCardFromWaitList(position);
     }
     
     public long getItemId(int position) {
@@ -71,9 +74,13 @@ public class CardsAdapter extends BaseAdapter {
         }
 
         // Bind the data efficiently with the holder.
+    	if(mType == 0){
         holder.desc.setText(mContext.getCardFromCheckedList(position).mDesc);
         holder.fullName.setText(mContext.getCardFromCheckedList(position).mFullname);
-
+    	}else {        
+    		holder.desc.setText(mContext.getCardFromWaitList(position).mDesc);
+    		holder.fullName.setText(mContext.getCardFromWaitList(position).mFullname);
+    		}
         return convertView;
     }
 

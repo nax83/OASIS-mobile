@@ -2,10 +2,7 @@ package it.bussoleno.oasis;
 
 import it.bussoleno.oasis.httpservice.HttpService;
 
-import java.io.IOException;
 import java.util.HashMap;
-
-import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -18,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.View;
@@ -52,13 +48,6 @@ public class MainActivity extends FragmentActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-//		if (findViewById(R.id.fragment_container) != null) {
-//			listFragment = CardsListFragment.newInstance();
-//			getSupportFragmentManager().beginTransaction()
-//					.add(R.id.fragment_container, listFragment, CARDS_FRAGMENT)
-//					.commit();
-//		}
 		
 		 // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -95,7 +84,8 @@ public class MainActivity extends FragmentActivity{
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		CardsAdapter cardsAdapter = new CardsAdapter(this);
+		CardsAdapter cardsAdapter = new CardsAdapter(this, 0);
+		CardsAdapter cardsWAdapter = new CardsAdapter(this, 1);
 		//listFragment.setListAdapter(cardsAdapter);
 		//listFragment.getListView().setDividerHeight(0);
 		Fragment f = mPagerAdapter.getFragment(LIST_CHECKEDIN);
@@ -103,6 +93,12 @@ public class MainActivity extends FragmentActivity{
 			System.out.println("List not null");
 			((ListFragment)f).setListAdapter(cardsAdapter);
 			((ListFragment)f).getListView().setDividerHeight(0);
+		}
+		Fragment fw = mPagerAdapter.getFragment(LIST_TOBECHECKEDIN);
+		if(f != null){
+			System.out.println("List not null");
+			((ListFragment)fw).setListAdapter(cardsWAdapter);
+			((ListFragment)fw).getListView().setDividerHeight(0);
 		}
 	}
 

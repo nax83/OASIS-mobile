@@ -28,6 +28,10 @@ public class HttpService extends IntentService {
 	public static final int DETAILS_KO = 21;
 
 	public static final String RESOURCE_URL = "resource_url";
+	public static final int REQCONFIRM = 3;
+	public static final int CONFIRM_OK = 30;
+	public static final int CONFIRM_KO = 31;
+	
 	private static final String TAG_ID = "id";
 	private static final String TAG_DESC = "description";
 	private static final String TAG_NAME = "name";
@@ -36,11 +40,8 @@ public class HttpService extends IntentService {
 	private static final String TAG_KIND_FAMILYNAME = "family_name";
 	private static final String TAG_KIND_FIRSTNAME = "first_name";
 	private static final String TAG_KIND_DESCRIPTION = "description";
+	private static final String TAG_KIND_PLACEOWNER = "place_owner";	
 	private static final String TAG_VALUE = "value";
-
-	public static final int REQCONFIRM = 3;
-	public static final int CONFIRM_OK = 30;
-	public static final int CONFIRM_KO = 31;
 
 	private final IBinder mBinder = new MyBinder();
 	private ResultReceiver resultReceiver;
@@ -110,6 +111,8 @@ public class HttpService extends IntentService {
 			String last = "";
 			String desc = "";
 			String id = "";
+			String isOwner = "";
+			
 			String resource_url = intent.getStringExtra(RESOURCE_URL);
 			System.out.println("resource url is " + resource_url);
 			try {
@@ -128,6 +131,8 @@ public class HttpService extends IntentService {
 							last = tmp.getString(TAG_VALUE);
 						if (TAG_KIND_DESCRIPTION.equals(kind))
 							desc = tmp.getString(TAG_VALUE);
+						if (TAG_KIND_PLACEOWNER.equals(kind))
+							isOwner = tmp.getString(TAG_VALUE);
 					}
 					if ("".equals(first) || "".equals(last) || "".equals(desc)) {
 						// TODO: handle error
@@ -146,8 +151,11 @@ public class HttpService extends IntentService {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+			
 			Bundle b = new Bundle();
-			b.putParcelable("card", new Card(id, fullname, desc));
+			if("S".equals(isOwner))
+				b.putParcelable("card", new Card(id, fullname, desc, true));
+			else b.putParcelable("card", new Card(id, fullname, desc, false));
 			resultReceiver.send(DETAILS_OK, b);
 			break;
 		case REQCONFIRM:
@@ -164,7 +172,6 @@ public class HttpService extends IntentService {
 				e.printStackTrace();
 			}
 
-			
 			break;
 		default:
 			return;

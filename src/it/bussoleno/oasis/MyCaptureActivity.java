@@ -80,12 +80,6 @@ public final class MyCaptureActivity extends CaptureActivity implements
 
 	public static final int HISTORY_REQUEST_CODE = 0x0000bacc;
 
-	private static final Set<ResultMetadataType> DISPLAYABLE_METADATA_TYPES = EnumSet
-			.of(ResultMetadataType.ISSUE_NUMBER,
-					ResultMetadataType.SUGGESTED_PRICE,
-					ResultMetadataType.ERROR_CORRECTION_LEVEL,
-					ResultMetadataType.POSSIBLE_COUNTRY);
-
 	private CameraManager cameraManager;
 	private CaptureActivityHandler handler;
 	private Result savedResultToShow;
@@ -784,7 +778,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 			}else if (resultCode == HttpService.CONFIRM_OK) {
 				Card card = resultData.getParcelable("card");
 				((MyApplication) MyCaptureActivity.this.getApplication())
-				.addToCheckedListAt(0, card);
+				.addToList(card);
 			}
 		}
 	}

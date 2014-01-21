@@ -98,20 +98,6 @@ public class CaptureActivity extends Activity implements
 
 	private static final String TAG = CaptureActivity.class.getSimpleName();
 
-	private static final String TAG_ID = "id";
-	private static final String TAG_DESC = "description";
-	private static final String TAG_NAME = "name";
-	private static final String TAG_DETAILS = "details";
-	private static final String TAG_KIND = "kind";
-	private static final String TAG_KIND_FAMILYNAME = "family_name";
-	private static final String TAG_KIND_FIRSTNAME = "first_name";
-	private static final String TAG_KIND_DESCRIPTION = "description";
-	
-	private static final String TAG_VALUE = "value";
-
-	private static final String TAG_FIRST = "first";
-	private static final String TAG_LAST = "last";
-
 	private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
 	private static final long BULK_MODE_SCAN_DELAY_MS = 1000L;
 
@@ -566,146 +552,7 @@ public class CaptureActivity extends Activity implements
 	// Put up our own UI for how to handle the decoded contents.
 	private void handleDecodeInternally(Result rawResult,
 			ResultHandler resultHandler, Bitmap barcode) {
-		statusView.setVisibility(View.GONE);
-		viewfinderView.setVisibility(View.GONE);
-		
-		String endPoint = String.valueOf(rawResult);
-		//store result to post future actions
-		mEndPoint = endPoint.split("/")[0];
-		System.out.println("endPoint is " + mEndPoint);
-		//TODO endPoint null??
-		new AsyncTask<String, Void, JSONObject>() {
-
-			protected void onPreExecute() {
-				confirm = new Dialog(CaptureActivity.this, R.style.PauseDialog);
-				confirm.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				confirm.getWindow().setBackgroundDrawable(
-						new ColorDrawable(android.graphics.Color.TRANSPARENT));
-				confirm.setCancelable(true);
-				confirm.setContentView(R.layout.dialog_confirm);
-				WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-				lp.copyFrom(confirm.getWindow().getAttributes());
-				lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-				lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-				confirm.getWindow().setAttributes(lp);
-
-				Button btn_ko = (Button) confirm.findViewById(R.id.btn_ko);
-				btn_ko.setOnClickListener(new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						restartScan();
-					}
-				});
-				
-				confirm.setOnKeyListener(new Dialog.OnKeyListener() {
-					
-					@Override
-					public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-						switch (keyCode) {
-						case KeyEvent.KEYCODE_BACK:
-							dialog.dismiss();
-							restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
-							return true;
-						default:	
-							return false;
-						}
-					}
-				});
-				
-				confirm.show();
-			};
-
-			@Override
-			protected JSONObject doInBackground(String... domains) {
-				JSONObject response = null;
-				String domain = domains[0];
-				System.out.println("domain is " + domain);
-				try {
-					response = ServerUtilities.getJSON(domain, "");
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				return response;
 			}
-
-			@Override
-			protected void onPostExecute(JSONObject result) {
-				System.out.println("parsing result");
-				if (result != null) {
-					String first = "";
-					String last = "";
-					String desc = "";
-					String id = "";
-					JSONArray details;
-					try {
-						id = result.getString(TAG_ID);
-						details = result.getJSONArray(TAG_DETAILS);
-						for(int i=0; i<details.length();i++){
-							JSONObject tmp = (JSONObject) details.get(i);
-							try{
-								String kind = tmp.getString(TAG_KIND);
-								if(TAG_KIND_FAMILYNAME.equals(kind))
-									first = tmp.getString(TAG_VALUE);
-								if(TAG_KIND_FIRSTNAME.equals(kind))
-									last = tmp.getString(TAG_VALUE);
-								if(TAG_KIND_DESCRIPTION.equals(kind))
-									desc = tmp.getString(TAG_VALUE);
-							}catch (Exception e) {
-								System.out.println("index: " + i);
-							}
-						}
-						if("".equals(first)||"".equals(last)||"".equals(desc)) {
-							//TODO: handle error
-							System.out.println("Error parsing first last");
-						}
-
-						first = (""+first.charAt(0)).toUpperCase()+first.substring(1,first.length());
-						last = (""+last.charAt(0)).toUpperCase()+last.substring(1, last.length());
-
-						final String d = desc;
-						final String ide = id;
-						final String fullname = first + " " + last;
-						
-						Button btn_ok = (Button) confirm
-								.findViewById(R.id.btn_ok);
-						
-						btn_ok.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-								Card card = new Card(ide, fullname,
-										d);
-
-								new ConfirmTask().execute(card);
-								restartScan();
-							}
-						});
-						if (confirm != null) {
-							confirm.findViewById(R.id.wrapper).setVisibility(
-									View.VISIBLE);
-							((TextView)confirm.findViewById(R.id.text1)).setText(
-									fullname);
-							((TextView)confirm.findViewById(R.id.text3)).setText(
-									d);
-							confirm.findViewById(R.id.loading).setVisibility(
-									View.INVISIBLE);
-						}
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}else{
-					System.out.println("Result is null");
-				}
-			};
-
-		}.execute(mEndPoint);
-
-	}
 
 	private void restartScan(){
 		confirm.dismiss();
@@ -890,36 +737,5 @@ public class CaptureActivity extends Activity implements
 	public void drawViewfinder() {
 		viewfinderView.drawViewfinder();
 	}
-	
-	private class ConfirmTask extends AsyncTask<Card, Void, Void> {
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			
-		}
-
-		@Override
-		protected Void doInBackground(Card... paramArrayOfParams) {
-			Card card = paramArrayOfParams[0];
-			try {
-				HashMap<String, String>params = new HashMap<String, String>();
-				params.put("badge_id", card.mId);
-				ServerUtilities.post("http://" + mEndPoint + "/presences", params);
-				//ServerUtilities.post("http://192.168.1.5:3000/presences", params);
-				((MyApplication) CaptureActivity.this
-						.getApplication()).addToCheckedListAt(0, card);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
-			
-			return null;
-		}
-
-		protected void onPostExecute(Void result) {
-			// TODO handle response
-		};
-	}
-
 	
 }

@@ -10,21 +10,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentTransaction;
 
-public class MainActivity extends FragmentActivity{
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener{
 
 	//private static final String CARDS_FRAGMENT = "cards_fragment";
 
@@ -49,11 +54,34 @@ public class MainActivity extends FragmentActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		final ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+	    
 		 // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
+        mPager.setOnPageChangeListener(
+                new ViewPager.SimpleOnPageChangeListener() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        // When swiping between pages, select the
+                        // corresponding tab.
+                        getSupportActionBar().setSelectedNavigationItem(position);
+                    }
+                });
+        
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setText(getString(R.string.tab_checked))
+                        .setTabListener(this));
+        
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setText(getString(R.string.tab_queued))
+                        .setTabListener(this));
+        
 		login = new Dialog(this, android.R.style.Theme_Light_NoTitleBar);
 		login.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		login.setCancelable(false);
@@ -119,17 +147,14 @@ public class MainActivity extends FragmentActivity{
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.main_activity_actions, menu);
+	    return super.onCreateOptionsMenu(menu);
 	}
 
 	public void scanCode(View v) {
 		System.out.println("Let's scan!");
-
 		Intent intentScan = new Intent("it.oasis.bussoleno.SCAN");
-
-		//startActivityForResult(intentScan, REQUEST_CODE);
 		startActivity(intentScan);
 	}
 
@@ -145,7 +170,42 @@ public class MainActivity extends FragmentActivity{
 			}
 		}
 	}
+	@Override
+	public void onTabReselected(Tab tab,
+			FragmentTransaction transaction) {
+		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void onTabSelected(Tab tab,
+			FragmentTransaction transaction) {
+		
+		mPager.setCurrentItem(tab.getPosition());
+		
+	}
+
+	@Override
+	public void onTabUnselected(Tab tab,
+			FragmentTransaction transaction) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+	        case R.id.action_settings:
+	    		System.out.println("Let's scan!");
+	    		Intent intentScan = new Intent("it.oasis.bussoleno.SCAN");
+	    		startActivity(intentScan);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
 	class MyResultReceiver extends ResultReceiver {
 
 		public MyResultReceiver(Handler handler) {
@@ -160,7 +220,7 @@ public class MainActivity extends FragmentActivity{
 			}
 		}
 	}
-
+	
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);

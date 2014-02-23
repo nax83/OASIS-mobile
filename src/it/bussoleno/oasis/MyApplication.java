@@ -11,7 +11,6 @@ public class MyApplication extends Application {
 	
 	public MyApplication(){
 		super();
-		checkedInList.add(new Card("0", "FirstName LastName", "this is a desc", false));
 	}
 	
 	public void addToList(Card c){

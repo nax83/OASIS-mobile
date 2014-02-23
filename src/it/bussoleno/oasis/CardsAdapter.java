@@ -75,8 +75,8 @@ public class CardsAdapter extends BaseAdapter {
 
         // Bind the data efficiently with the holder.
     	if(mType == 0){
-        holder.desc.setText(mContext.getCardFromCheckedList(position).mDesc);
-        holder.fullName.setText(mContext.getCardFromCheckedList(position).mFullname);
+    		holder.desc.setText(mContext.getCardFromCheckedList(position).mDesc);
+    		holder.fullName.setText(mContext.getCardFromCheckedList(position).mFullname);
     	}else {        
     		holder.desc.setText(mContext.getCardFromWaitList(position).mDesc);
     		holder.fullName.setText(mContext.getCardFromWaitList(position).mFullname);

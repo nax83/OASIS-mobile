@@ -138,7 +138,7 @@ public class CaptureActivity extends Activity implements
 
 	private String mEndPoint;
 
-	ViewfinderView getViewfinderView() {
+	protected ViewfinderView getViewfinderView() {
 		return viewfinderView;
 	}
 
@@ -146,7 +146,7 @@ public class CaptureActivity extends Activity implements
 		return handler;
 	}
 
-	CameraManager getCameraManager() {
+	protected CameraManager getCameraManager() {
 		return cameraManager;
 	}
 

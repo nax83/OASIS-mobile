@@ -48,9 +48,7 @@ import it.bussoleno.oasis.httpservice.HttpService;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This activity opens the camera and does the actual scanning on a background
@@ -104,15 +102,16 @@ public final class MyCaptureActivity extends CaptureActivity implements
 	private String mEndPoint;
 	private MyCAResultReceiver resultReceiver;
 	
-	ViewfinderView getViewfinderView() {
+	@Override
+	protected ViewfinderView getViewfinderView() {
 		return viewfinderView;
 	}
 
 	public Handler getHandler() {
 		return handler;
 	}
-
-	CameraManager getCameraManager() {
+	
+	protected CameraManager getCameraManager() {
 		return cameraManager;
 	}
 
@@ -779,6 +778,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				Card card = resultData.getParcelable("card");
 				((MyApplication) MyCaptureActivity.this.getApplication())
 				.addToList(card);
+				Toast.makeText(MyCaptureActivity.this, card.mFullname + " aggiunto alla lista", Toast.LENGTH_LONG).show();
 			}
 		}
 	}

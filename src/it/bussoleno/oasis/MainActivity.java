@@ -114,8 +114,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 		super.onResume();
 		CardsAdapter cardsAdapter = new CardsAdapter(this, 0);
 		CardsAdapter cardsWAdapter = new CardsAdapter(this, 1);
-		//listFragment.setListAdapter(cardsAdapter);
-		//listFragment.getListView().setDividerHeight(0);
 		Fragment f = mPagerAdapter.getFragment(LIST_CHECKEDIN);
 		if(f != null){
 			System.out.println("List not null");

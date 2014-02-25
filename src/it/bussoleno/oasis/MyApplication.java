@@ -1,7 +1,6 @@
 package it.bussoleno.oasis;
 
 import java.util.ArrayList;
-
 import android.app.Application;
 
 public class MyApplication extends Application {
@@ -21,7 +20,15 @@ public class MyApplication extends Application {
 	}
 	
 	private void addToWaitList(Card c){
-		waitingList.add(c);
+		
+		for(int i = 0; i<waitingList.size();i++){
+			Card tmp = waitingList.get(i);
+			if(tmp.mPastPresences > c.mPastPresences)
+				continue;
+			else {
+				waitingList.add(i, c);
+			}
+		}
 	}
 	
 	public Card removeFromWaitList(int index){

@@ -40,8 +40,11 @@ public class HttpService extends IntentService {
 	private static final String TAG_KIND_FAMILYNAME = "family_name";
 	private static final String TAG_KIND_FIRSTNAME = "first_name";
 	private static final String TAG_KIND_DESCRIPTION = "description";
-	private static final String TAG_KIND_PLACEOWNER = "place_owner";	
+	private static final String TAG_KIND_PLACEOWNER = "place_owner";
+	private static final String PLACEOWNER_YES = "S";
+	private static final String PLACEOWNER_NO = "N";
 	private static final String TAG_VALUE = "value";
+	private static final String TAG_PAST_PRESENCES = "past_presences";
 
 	private final IBinder mBinder = new MyBinder();
 	private ResultReceiver resultReceiver;
@@ -52,7 +55,6 @@ public class HttpService extends IntentService {
 
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
 		return mBinder;
 	}
 
@@ -94,10 +96,8 @@ public class HttpService extends IntentService {
 				ServerUtilities.getJSON(Config.ACTION_LOGIN, "");
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 				resultReceiver.send(LOGIN_OK, null);
@@ -112,6 +112,7 @@ public class HttpService extends IntentService {
 			String desc = "";
 			String id = "";
 			String isOwner = "";
+			int past_presences = 0;
 			
 			String resource_url = intent.getStringExtra(RESOURCE_URL);
 			System.out.println("resource url is " + resource_url);
@@ -121,6 +122,8 @@ public class HttpService extends IntentService {
 					
 					JSONArray details;
 					id = response.getString(TAG_ID);
+					past_presences = Integer.parseInt(response.getString(TAG_PAST_PRESENCES));
+					
 					details = response.getJSONArray(TAG_DETAILS);
 					for (int i = 0; i < details.length(); i++) {
 						JSONObject tmp = (JSONObject) details.get(i);
@@ -144,19 +147,25 @@ public class HttpService extends IntentService {
 					last = ("" + last.charAt(0)).toUpperCase()
 							+ last.substring(1, last.length());
 					fullname = first + " " + last;
+					
+					Bundle b = new Bundle();
+					if(PLACEOWNER_YES.equals(isOwner))
+						b.putParcelable("card", new Card(id, fullname, desc, past_presences, true));
+					else b.putParcelable("card", new Card(id, fullname, desc, past_presences, false));
+					resultReceiver.send(DETAILS_OK, b);
 				}
 
 			} catch (IOException e) {
 				e.printStackTrace();
+				resultReceiver.send(DETAILS_KO, new Bundle());
 			} catch (JSONException e) {
 				e.printStackTrace();
+				resultReceiver.send(DETAILS_KO, new Bundle());
+			} catch (NumberFormatException nfe){
+				nfe.printStackTrace();
+				resultReceiver.send(DETAILS_KO, new Bundle());
 			}
 			
-			Bundle b = new Bundle();
-			if("S".equals(isOwner))
-				b.putParcelable("card", new Card(id, fullname, desc, true));
-			else b.putParcelable("card", new Card(id, fullname, desc, false));
-			resultReceiver.send(DETAILS_OK, b);
 			break;
 		case REQCONFIRM:
 			

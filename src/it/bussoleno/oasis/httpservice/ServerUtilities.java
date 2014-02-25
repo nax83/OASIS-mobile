@@ -63,6 +63,7 @@ public final class ServerUtilities {
 			out.close();
 			// handle the response
 			int status = conn.getResponseCode();
+			Log.d(TAG, ""+status);
 			if (status >= 400) {
 				throw new IOException("Post failed with error code " + status);
 			}
@@ -91,6 +92,7 @@ public final class ServerUtilities {
 		HttpGet httpget = new HttpGet(endpoint + bodyBuilder.toString());
 		Log.d(TAG, endpoint + bodyBuilder.toString());
 		HttpResponse response = httpclient.execute(httpget);
+		Log.d(TAG, ""+response.getStatusLine().getStatusCode());
 		InputStream content = null;
 		content = response.getEntity().getContent();
 		// Wrap a BufferedReader around the InputStream
@@ -110,10 +112,11 @@ public final class ServerUtilities {
 
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpget = new HttpGet(endpoint + params);
-		System.out.println("get " + endpoint + params);
+		Log.d(TAG, "get " + endpoint + params);
 		HttpResponse response = httpclient.execute(httpget);
 		InputStream content = null;
 		content = response.getEntity().getContent();
+		Log.d(TAG, ""+response.getStatusLine().getStatusCode());
 		// Wrap a BufferedReader around the InputStream
 		BufferedReader rd = new BufferedReader(new InputStreamReader(content));
 		StringBuilder sb = new StringBuilder();

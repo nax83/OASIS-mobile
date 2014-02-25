@@ -524,7 +524,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		// store result to post future actions
 		mEndPoint = String.valueOf(rawResult);
 
-		System.out.println("endPoint is " + mEndPoint);
+		Log.d(TAG, "endPoint is " + mEndPoint);
 
 		confirm = new Dialog(MyCaptureActivity.this, R.style.PauseDialog);
 		confirm.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -751,6 +751,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
 			if (resultCode == HttpService.DETAILS_OK) {
 				final Card card = resultData.getParcelable("card");
+				if (card == null) return;
 				Button btn_ok = (Button) confirm.findViewById(R.id.btn_ok);
 				btn_ok.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -773,7 +774,10 @@ public final class MyCaptureActivity extends CaptureActivity implements
 					confirm.findViewById(R.id.loading).setVisibility(
 							View.INVISIBLE);
 				}
-
+			}else if (resultCode == HttpService.DETAILS_KO){
+				Log.d(TAG, "Details error");
+				restartScan();
+				
 			}else if (resultCode == HttpService.CONFIRM_OK) {
 				Card card = resultData.getParcelable("card");
 				((MyApplication) MyCaptureActivity.this.getApplication())

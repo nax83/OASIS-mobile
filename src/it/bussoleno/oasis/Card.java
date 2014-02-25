@@ -10,12 +10,14 @@ public class Card implements Parcelable {
 	public final String mFullname;
 	public final String mDesc;
 	public final boolean mIsOwner;
+	public final int mPastPresences;
 	
-	public Card(String id, String fullname, String desc, boolean isOwner) {
+	public Card(String id, String fullname, String desc, int pastPresences, boolean isOwner) {
 		this.mFullname = fullname;
 		this.mDesc = desc;
 		this.mId = id;
 		this.mIsOwner = isOwner;
+		this.mPastPresences = pastPresences;
 	}
 
 	// Parcelling part
@@ -26,6 +28,7 @@ public class Card implements Parcelable {
 		this.mId = data[0];
 		this.mFullname = data[1];
 		this.mDesc = data[2];
+		this.mPastPresences = in.readInt();
 		this.mIsOwner = in.readByte() != 0;
 	}
 
@@ -39,7 +42,9 @@ public class Card implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeStringArray(new String[] { this.mId, this.mFullname,
 				this.mDesc });
+		dest.writeInt(this.mPastPresences);
 		dest.writeByte((byte) (this.mIsOwner ? 1 : 0));
+			
 	}
 
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

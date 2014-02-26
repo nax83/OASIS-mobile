@@ -31,7 +31,6 @@ public class MyApplication extends Application {
 			}
 		}
 		waitingList.add(c);
-		
 	}
 	
 	public Card removeFromWaitList(int index){
@@ -44,6 +43,10 @@ public class MyApplication extends Application {
 	
 	public int getWaitListSize(){
 		return waitingList.size();
+	}
+	
+	public ArrayList<Card> getWaitingList(){
+		return waitingList;
 	}
 	
 	private void addToCheckedList(Card c){
@@ -60,6 +63,10 @@ public class MyApplication extends Application {
 	
 	public int getCheckedInListSize(){
 		return checkedInList.size();
+	}
+	
+	public ArrayList<Card> getCheckedInList(){
+		return checkedInList;
 	}
 	
 }

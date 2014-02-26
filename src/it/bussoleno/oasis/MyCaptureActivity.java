@@ -751,17 +751,26 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
 			if (resultCode == HttpService.DETAILS_OK) {
 				final Card card = resultData.getParcelable("card");
-				if (card == null) return;
+				if (card == null) 
+					return;
 				Button btn_ok = (Button) confirm.findViewById(R.id.btn_ok);
 				btn_ok.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Intent intent = new Intent(MyCaptureActivity.this, HttpService.class);
-						intent.putExtra(HttpService.REQTYPE, HttpService.REQCONFIRM);
-						intent.putExtra("receiver", resultReceiver);
-						intent.putExtra(HttpService.RESOURCE_URL, mEndPoint);
-						intent.putExtra("card", card);
-						startService(intent);
+						if(card.mIsOwner){
+							//request a check in
+							Intent intent = new Intent(MyCaptureActivity.this, HttpService.class);
+							intent.putExtra(HttpService.REQTYPE, HttpService.REQCONFIRM);
+							intent.putExtra("receiver", resultReceiver);
+							intent.putExtra(HttpService.RESOURCE_URL, mEndPoint);
+							intent.putExtra("card", card);
+							startService(intent);
+						}else {
+							//pass it directly to the model. It will add the card in the wait list
+							((MyApplication) MyCaptureActivity.this.getApplication())
+							.addToList(card);
+							Toast.makeText(MyCaptureActivity.this, card.mFullname + " aggiunto in lista d'attesa", Toast.LENGTH_LONG).show();
+						}
 						restartScan();
 					}
 				});

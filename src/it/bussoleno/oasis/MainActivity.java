@@ -2,8 +2,6 @@ package it.bussoleno.oasis;
 
 import it.bussoleno.oasis.httpservice.HttpService;
 
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,7 +11,6 @@ import android.os.ResultReceiver;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,66 +26,64 @@ import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.FragmentTransaction;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener{
+public class MainActivity extends ActionBarActivity implements
+		ActionBar.TabListener {
 
-	//private static final String CARDS_FRAGMENT = "cards_fragment";
+	private static final int NUM_PAGES = 2;
+	private static final int LIST_CHECKEDIN = 0;
+	private static final int LIST_TOBECHECKEDIN = 1;
 
-    private static final int NUM_PAGES = 2;
-    private static final int LIST_CHECKEDIN = 0;
-    private static final int LIST_TOBECHECKEDIN = 1;
-    
-    private ViewPager mPager;
-    private ScreenSlidePagerAdapter mPagerAdapter;
-    private HashMap<Integer,Fragment> mPageReferenceMap = new HashMap<Integer, Fragment>();
-	
-	Dialog login;
-	Dialog confirm;
+	private ViewPager mPager;
+	private ScreenSlidePagerAdapter mPagerAdapter;
+
+	CardsListFragment mCheckedInList;
+	CardsListFragment mWaitingList;
+
+	private Dialog login;
 
 	// public static final int REQUEST_CODE = 0x0bf7c0de;
 	public static final int REQUEST_CODE = 1;
-	
+
 	private MyResultReceiver resultReceiver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		final ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-	    
-		 // Instantiate a ViewPager and a PagerAdapter.
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-        mPager.setAdapter(mPagerAdapter);
 
-        mPager.setOnPageChangeListener(
-                new ViewPager.SimpleOnPageChangeListener() {
-                    @Override
-                    public void onPageSelected(int position) {
-                        // When swiping between pages, select the
-                        // corresponding tab.
-                        getSupportActionBar().setSelectedNavigationItem(position);
-                    }
-                });
-        
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText(getString(R.string.tab_checked))
-                        .setTabListener(this));
-        
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText(getString(R.string.tab_queued))
-                        .setTabListener(this));
-        
+		mCheckedInList = new CardsListFragment();
+		mWaitingList = new CardsListFragment();
+
+		// Instantiate a ViewPager and a PagerAdapter.
+		mPager = (ViewPager) findViewById(R.id.pager);
+		mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+		mPager.setAdapter(mPagerAdapter);
+
+		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				// When swiping between pages, select the
+				// corresponding tab.
+				getSupportActionBar().setSelectedNavigationItem(position);
+			}
+		});
+
+		actionBar.addTab(actionBar.newTab()
+				.setText(getString(R.string.tab_checked)).setTabListener(this));
+
+		actionBar.addTab(actionBar.newTab()
+				.setText(getString(R.string.tab_queued)).setTabListener(this));
+
 		login = new Dialog(this, android.R.style.Theme_Light_NoTitleBar);
 		login.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		login.setCancelable(false);
 		login.setContentView(R.layout.dialog_login);
 
 		resultReceiver = new MyResultReceiver(new Handler());
-		
+
 		Button b = (Button) login.findViewById(R.id.btn_login);
 		b.setOnClickListener(new View.OnClickListener() {
 
@@ -104,28 +99,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 		lp.height = WindowManager.LayoutParams.MATCH_PARENT;
 
 		login.getWindow().setAttributes(lp);
-		login.show();
-		
+		// login is temporary disabled
+		// login.show();
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		CardsAdapter cardsAdapter = new CardsAdapter(this, 0);
-		CardsAdapter cardsWAdapter = new CardsAdapter(this, 1);
-		Fragment f = mPagerAdapter.getFragment(LIST_CHECKEDIN);
-		if(f != null){
-			System.out.println("List not null");
-			((ListFragment)f).setListAdapter(cardsAdapter);
-			((ListFragment)f).getListView().setDividerHeight(0);
-		}
-		Fragment fw = mPagerAdapter.getFragment(LIST_TOBECHECKEDIN);
-		if(f != null){
-			System.out.println("List not null");
-			((ListFragment)fw).setListAdapter(cardsWAdapter);
-			((ListFragment)fw).getListView().setDividerHeight(0);
-		}
+		CardsAdapter cardsAdapter = new CardsAdapter(this,
+				((MyApplication) getApplication()).getCheckedInList());
+		CardsAdapter cardsWAdapter = new CardsAdapter(this,
+				((MyApplication) getApplication()).getWaitingList());
+
+		mCheckedInList.setListAdapter(cardsAdapter);
+		mWaitingList.setListAdapter(cardsWAdapter);
 	}
 
 	private void submitLogin(String user, String pwd) {
@@ -145,9 +133,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.main_activity_actions, menu);
-	    return super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_activity_actions, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	public void scanCode(View v) {
@@ -168,42 +156,40 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 			}
 		}
 	}
+
 	@Override
-	public void onTabReselected(Tab tab,
-			FragmentTransaction transaction) {
+	public void onTabReselected(Tab tab, FragmentTransaction transaction) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void onTabSelected(Tab tab,
-			FragmentTransaction transaction) {
-		
+	public void onTabSelected(Tab tab, FragmentTransaction transaction) {
+
 		mPager.setCurrentItem(tab.getPosition());
-		
+
 	}
 
 	@Override
-	public void onTabUnselected(Tab tab,
-			FragmentTransaction transaction) {
+	public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
-	    switch (item.getItemId()) {
-	        case R.id.action_settings:
-	    		System.out.println("Let's scan!");
-	    		Intent intentScan = new Intent("it.oasis.bussoleno.SCAN");
-	    		startActivity(intentScan);
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			System.out.println("Let's scan!");
+			Intent intentScan = new Intent("it.oasis.bussoleno.SCAN");
+			startActivity(intentScan);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
-	
+
 	class MyResultReceiver extends ResultReceiver {
 
 		public MyResultReceiver(Handler handler) {
@@ -213,36 +199,30 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
 		@Override
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
-			if(resultCode == HttpService.LOGIN_OK){
+			if (resultCode == HttpService.LOGIN_OK) {
 				login.dismiss();
 			}
 		}
 	}
-	
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
-        @Override
-        public  Fragment getItem(int position) {
-        	Fragment fg;
-        	if(position==LIST_CHECKEDIN){
-        		fg = CardsListFragment.newInstance();
-        	}else{
-        		fg = CardsListFragment.newInstance();
-        	}
-        	mPageReferenceMap.put(position, fg);
-        	return fg;
-        }
+	private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+		public ScreenSlidePagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
 
-        @Override
-        public int getCount() {
-            return NUM_PAGES;
-        }
-        
-    	public Fragment getFragment(int key) {
-    	    return mPageReferenceMap.get(key);
-    	}
-    }
+		@Override
+		public Fragment getItem(int position) {
+			if (position == LIST_CHECKEDIN) {
+				return mCheckedInList;
+			} else {
+				return mWaitingList;
+			}
+		}
+
+		@Override
+		public int getCount() {
+			return NUM_PAGES;
+		}
+
+	}
 }

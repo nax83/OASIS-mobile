@@ -109,7 +109,7 @@ public class MainActivity extends ActionBarActivity implements
 		super.onResume();
 		CardsAdapter cardsAdapter = new CardsAdapter(this,
 				((MyApplication) getApplication()).getCheckedInList());
-		CardsAdapter cardsWAdapter = new CardsAdapter(this,
+		WaitingCardsAdapter cardsWAdapter = new WaitingCardsAdapter(this,
 				((MyApplication) getApplication()).getWaitingList());
 
 		mCheckedInList.setListAdapter(cardsAdapter);

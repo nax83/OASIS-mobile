@@ -769,7 +769,6 @@ public final class MyCaptureActivity extends CaptureActivity implements
 							//pass it directly to the model. It will add the card in the wait list
 							((MyApplication) MyCaptureActivity.this.getApplication())
 							.addToList(card);
-							Toast.makeText(MyCaptureActivity.this, card.mFullname + " aggiunto in lista d'attesa", Toast.LENGTH_LONG).show();
 						}
 						restartScan();
 					}
@@ -791,7 +790,6 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				Card card = resultData.getParcelable("card");
 				((MyApplication) MyCaptureActivity.this.getApplication())
 				.addToList(card);
-				Toast.makeText(MyCaptureActivity.this, card.mFullname + " aggiunto alla lista", Toast.LENGTH_LONG).show();
 			}
 		}
 	}

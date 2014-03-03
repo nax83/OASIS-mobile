@@ -27,7 +27,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.FragmentTransaction;
 
 public class MainActivity extends ActionBarActivity implements
-		ActionBar.TabListener {
+		ActionBar.TabListener, CardsListFragment.OnStartScanListener {
 
 	private static final int NUM_PAGES = 2;
 	private static final int LIST_CHECKEDIN = 0;
@@ -138,7 +138,7 @@ public class MainActivity extends ActionBarActivity implements
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	public void scanCode(View v) {
+	public void scanCode() {
 		System.out.println("Let's scan!");
 		Intent intentScan = new Intent("it.oasis.bussoleno.SCAN");
 		startActivity(intentScan);
@@ -181,13 +181,17 @@ public class MainActivity extends ActionBarActivity implements
 		// Handle presses on the action bar items
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-			System.out.println("Let's scan!");
-			Intent intentScan = new Intent("it.oasis.bussoleno.SCAN");
-			startActivity(intentScan);
+			scanCode();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+
+	@Override
+	public void onStartScanSelected() {
+		scanCode();
 	}
 
 	class MyResultReceiver extends ResultReceiver {
@@ -225,4 +229,5 @@ public class MainActivity extends ActionBarActivity implements
 		}
 
 	}
+
 }

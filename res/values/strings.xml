@@ -132,5 +132,6 @@
     <string name="action_scan">Aggiungi</string>
     <string name="tab_checked">Presenti</string>
     <string name="tab_queued">In coda</string>
+    <string name="list_is_empty">La lista è vuota. Tocca per aggiungere</string>
 
 </resources>

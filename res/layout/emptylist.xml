@@ -3,18 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="90dp">
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/clipboard_text"
+        android:textColor="@color/dark_gray"
+        android:text="@string/list_is_empty"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="3dp"
+        android:layout_centerInParent="true"></TextView>
     <ImageView android:src="@drawable/clipboard_bw"
         android:id="@+id/clipboard"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:layout_centerHorizontal="true"
+        android:layout_above="@id/clipboard_text"
         />
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/dark_gray"
-        android:text="@string/list_is_empty"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="3dp"
-        android:layout_below="@id/clipboard"></TextView>
-
 </RelativeLayout>

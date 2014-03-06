@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" 
-    xmlns:oasis="http://schemas.android.com/apk/res-auto">
-    
-	<item android:id="@+id/action_settings"
-          android:icon="@drawable/clipboard"
-          android:title="@string/action_scan"
-          android:showAsAction="always"
-          xmlns:oasis="always"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:oasis="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/clipboard"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_scan"
+        oasis:showAsAction="ifRoom"/>
 
 </menu>

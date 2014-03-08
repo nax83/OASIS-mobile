@@ -101,6 +101,8 @@ public class MainActivity extends ActionBarActivity implements
 		login.getWindow().setAttributes(lp);
 		// login is temporary disabled
 		// login.show();
+		
+		((MyApplication)getApplication()).addToList(new Card("2", "Alessandro Nassisi Nassisi", "TEST TEST", 8, false));
 	}
 
 	@Override

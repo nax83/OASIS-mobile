@@ -101,6 +101,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 
 	private String mEndPoint;
 	private MyCAResultReceiver resultReceiver;
+	private MyApplication myApp;
 	
 	@Override
 	protected ViewfinderView getViewfinderView() {
@@ -145,6 +146,8 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				finish();
 			}
 		});
+		
+		myApp = ((MyApplication) MyCaptureActivity.this.getApplication());
 	}
 
 	@Override
@@ -744,7 +747,6 @@ public final class MyCaptureActivity extends CaptureActivity implements
 
 		public MyCAResultReceiver(Handler handler) {
 			super(handler);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
@@ -757,6 +759,11 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				btn_ok.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						if(myApp.isCardPresent(card)){
+							restartScan();
+							return;
+						}
+							
 						if(card.mIsOwner){
 							//request a check in
 							Intent intent = new Intent(MyCaptureActivity.this, HttpService.class);
@@ -767,8 +774,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 							startService(intent);
 						}else {
 							//pass it directly to the model. It will add the card in the wait list
-							((MyApplication) MyCaptureActivity.this.getApplication())
-							.addToList(card);
+							myApp.addToList(card);
 						}
 						restartScan();
 					}
@@ -788,8 +794,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				
 			}else if (resultCode == HttpService.CONFIRM_OK) {
 				Card card = resultData.getParcelable("card");
-				((MyApplication) MyCaptureActivity.this.getApplication())
-				.addToList(card);
+				myApp.addToList(card);
 			}
 		}
 	}

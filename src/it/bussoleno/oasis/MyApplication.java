@@ -23,13 +23,37 @@ public class MyApplication extends Application {
 		} else
 			addToWaitList(c);
 	}
+	
+	public boolean isCardPresent(Card c){
+		for (int i = 0; i < waitingList.size(); i++) {
+			Card tmp = waitingList.get(i);
+			//if a card is already in the list, discard it
+			Log.d(TAG, tmp.mId + " " + c.mId);
+			if(tmp.mId.equals(c.mId)){
+				Log.d(TAG, c.mFullname + "already in wait list");
+				return true;
+			}
+		}
+		
+		for (int i = 0; i < checkedInList.size(); i++) {
+			Card tmp = checkedInList.get(i);
+			//if a card is already in the list, discard it
+			Log.d(TAG, tmp.mId + " " + c.mId);
+			if(tmp.mId.equals(c.mId)){
+				Log.d(TAG, c.mFullname + "already in wait list");
+				return true;
+			}
+		}
+		Log.d(TAG, c.mFullname + " doesn't exist");
+		return false;
+	}
 
 	private void addToWaitList(Card c) {
 		int index = -1;
 		for (int i = 0; i < waitingList.size(); i++) {
 			Card tmp = waitingList.get(i);
 			//if a card is already in the list, discard it
-			if(tmp.mId == c.mId){
+			if(tmp.mId.equals(c.mId)){
 				Log.d(TAG, c.mFullname + "already in wait list");
 				return;
 			}

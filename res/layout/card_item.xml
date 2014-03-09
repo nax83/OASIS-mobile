@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/card"
-    android:orientation="vertical" >
+    android:background="@drawable/card">
 
     <TextView
         android:id="@+id/fullname"
@@ -13,7 +12,8 @@
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
         android:textColor="@color/darkgray"
-        android:textSize="20sp" >
+        android:textSize="20sp"
+        android:layout_marginRight="90dp">
     </TextView>
 
     <TextView
@@ -24,7 +24,36 @@
         android:paddingLeft="10dp"
         android:paddingTop="2dp"
         android:textColor="@color/lightgray"
-        android:textSize="16sp" >
+        android:textSize="16sp"
+        android:layout_below="@id/fullname" >
     </TextView>
 
-</LinearLayout>
+    <TextView android:id="@+id/waiting"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignRight="@id/desc"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="11dp"
+        android:text="@string/confirm"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:background="@drawable/back_confirm_lbl"
+        android:visibility="gone"/>
+    
+     <TextView android:id="@+id/confirmed"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignRight="@id/desc"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="11dp"
+        android:text="@string/confirmed"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:background="@drawable/back_confirmed_lbl"
+        android:visibility="gone"/>
+
+</RelativeLayout>

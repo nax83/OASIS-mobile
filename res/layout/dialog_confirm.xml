@@ -6,37 +6,67 @@
     android:background="@drawable/card_bkg"
     android:orientation="vertical" >
 
-   <LinearLayout
-        android:id="@+id/wrapper"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/midnight_blue"
+        android:gravity="center"
+        android:text="@string/details"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <RelativeLayout
+        android:id="@+id/wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="7dp"
         android:orientation="vertical"
         android:visibility="gone" >
 
         <TextView
-            android:id="@+id/header"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/midnight_blue"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:textSize="20sp"
             android:text="" />
 
         <TextView
-            android:id="@+id/text1"
+            android:id="@+id/auth_num"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="" />
-        
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:text=""
+            android:layout_below="@id/name" />
+
         <TextView
-            android:id="@+id/text3"
+            android:id="@+id/conc_num"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/dummy_desc" />
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:text=""
+            android:layout_below="@id/auth_num" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/dummy_desc"
+            android:textSize="18sp"
+            android:layout_below="@id/conc_num" />
 
         <LinearLayout
             android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/description"
+            android:layout_marginBottom="25dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal" >
 
             <Button
@@ -55,7 +85,7 @@
                 android:background="@drawable/confirm"
                 android:text="@string/btn_ok" />
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/loading"

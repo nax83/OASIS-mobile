@@ -40,6 +40,8 @@ public class HttpService extends IntentService {
 	private static final String TAG_KIND_FAMILYNAME = "family_name";
 	private static final String TAG_KIND_FIRSTNAME = "first_name";
 	private static final String TAG_KIND_DESCRIPTION = "description";
+	private static final String TAG_KIND_AUTHNUMBER = "authorization_number";
+	private static final String TAG_KIND_CONCNUMBER = "concession_number";
 	private static final String TAG_KIND_PLACEOWNER = "place_owner";
 	private static final String PLACEOWNER_YES = "S";
 	private static final String PLACEOWNER_NO = "N";
@@ -112,6 +114,8 @@ public class HttpService extends IntentService {
 			String desc = "";
 			String id = "";
 			String isOwner = "";
+			String auth_num = "";
+			String conc_num = "";
 			int past_presences = 0;
 			
 			String resource_url = intent.getStringExtra(RESOURCE_URL);
@@ -136,6 +140,10 @@ public class HttpService extends IntentService {
 							desc = tmp.getString(TAG_VALUE);
 						if (TAG_KIND_PLACEOWNER.equals(kind))
 							isOwner = tmp.getString(TAG_VALUE);
+						if (TAG_KIND_AUTHNUMBER.equals(kind))
+							auth_num = tmp.getString(TAG_VALUE);
+						if (TAG_KIND_CONCNUMBER.equals(kind))
+							conc_num = tmp.getString(TAG_VALUE);
 					}
 					if ("".equals(first) || "".equals(last) || "".equals(desc)) {
 						// TODO: handle error
@@ -150,8 +158,8 @@ public class HttpService extends IntentService {
 					
 					Bundle b = new Bundle();
 					if(PLACEOWNER_YES.equals(isOwner))
-						b.putParcelable("card", new Card(id, fullname, desc, past_presences, true));
-					else b.putParcelable("card", new Card(id, fullname, desc, past_presences, false));
+						b.putParcelable("card", new Card(id, fullname, desc,auth_num, conc_num, past_presences, true));
+					else b.putParcelable("card", new Card(id, fullname, desc,auth_num, conc_num, past_presences, false));
 					resultReceiver.send(DETAILS_OK, b);
 				}
 

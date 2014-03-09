@@ -133,5 +133,12 @@
     <string name="tab_checked">Presenti</string>
     <string name="tab_queued">In coda</string>
     <string name="list_is_empty">La lista è vuota. Tocca per aggiungere</string>
-
+    <string name="confirm">Conferma</string>
+    <string name="confirmed">Confermato</string>
+	<string name="body_confirm">Vuoi confermare </string>
+	<string name="yes">Sì</string>
+	<string name="no">Annulla</string>
+	<string name="details">Dettagli</string>
+	<string name="conc_num">Num. di concessione: </string>
+	<string name="auth_num">Num. di autorizzazione: </string>
 </resources>

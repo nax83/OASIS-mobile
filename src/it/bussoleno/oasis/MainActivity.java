@@ -1,9 +1,14 @@
 package it.bussoleno.oasis;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import it.bussoleno.oasis.httpservice.HttpService;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,7 +33,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.FragmentTransaction;
 
 public class MainActivity extends ActionBarActivity implements
-		ActionBar.TabListener, CardsListFragment.OnStartScanListener {
+		ActionBar.TabListener, CardsListFragment.OnStartScanListener,
+		CardsListFragment.OnCardClickListener, Observer {
 
 	private static final int NUM_PAGES = 2;
 	private static final int LIST_CHECKEDIN = 0;
@@ -45,6 +52,7 @@ public class MainActivity extends ActionBarActivity implements
 	public static final int REQUEST_CODE = 1;
 
 	private MyResultReceiver resultReceiver;
+	private MyApplication myApp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,18 +109,32 @@ public class MainActivity extends ActionBarActivity implements
 		login.getWindow().setAttributes(lp);
 		// login is temporary disabled
 		// login.show();
-		
-		((MyApplication)getApplication()).addToList(new Card("2", "Alessandro Nassisi Nassisi", "TEST TEST", 8, false));
+		myApp = ((MyApplication) getApplication());
+		myApp.getModel().addObserver(this);
+//		myApp.getModel().addToList(
+//				new Card("2", "Alessandro Nassisi Nassisi", "TEST TEST", 8,
+//						false));
+		updateAdapters();
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		CardsAdapter cardsAdapter = new CardsAdapter(this,
-				((MyApplication) getApplication()).getCheckedInList());
-		WaitingCardsAdapter cardsWAdapter = new WaitingCardsAdapter(this,
-				((MyApplication) getApplication()).getWaitingList());
+//		CardsAdapter cardsAdapter = new CardsAdapter(this, myApp.getModel()
+//				.getCheckedInList());
+//		WaitingCardsAdapter cardsWAdapter = new WaitingCardsAdapter(this, myApp
+//				.getModel().getWaitingList());
+//
+//		mCheckedInList.setListAdapter(cardsAdapter);
+//		mWaitingList.setListAdapter(cardsWAdapter);
+	}
+	
+	private void updateAdapters(){
+		CardsAdapter cardsAdapter = new CardsAdapter(this, myApp.getModel()
+				.getCheckedInList());
+		WaitingCardsAdapter cardsWAdapter = new WaitingCardsAdapter(this, myApp
+				.getModel().getWaitingList());
 
 		mCheckedInList.setListAdapter(cardsAdapter);
 		mWaitingList.setListAdapter(cardsWAdapter);
@@ -189,24 +211,59 @@ public class MainActivity extends ActionBarActivity implements
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
 
 	@Override
 	public void onStartScanSelected() {
 		scanCode();
 	}
 
+	@Override
+	public void onCardClicked(String id) {
+		final Card c = myApp.getModel().findCardById(id);
+		if (c != null && !c.mIsConfirmed) {
+			new AlertDialog.Builder(this)
+					.setIcon(android.R.drawable.ic_dialog_info)
+					.setTitle(R.string.confirm)
+					.setMessage(
+							getString(R.string.body_confirm) + " "
+									+ c.mFullname)
+					.setPositiveButton(R.string.yes,
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									Log.d("MainActivity", c.mFullname);
+									//request a check in
+									Intent intent = new Intent(MainActivity.this, HttpService.class);
+									intent.putExtra(HttpService.REQTYPE, HttpService.REQCONFIRM);
+									intent.putExtra("receiver", resultReceiver);
+									intent.putExtra("card", c);
+									startService(intent);
+								}
+							}).setNegativeButton(R.string.no, null).show();
+
+		}
+	}
+	
+	@Override
+	public void update(Observable observable, Object data) {
+		updateAdapters();
+	}
+
 	class MyResultReceiver extends ResultReceiver {
 
 		public MyResultReceiver(Handler handler) {
 			super(handler);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
 			if (resultCode == HttpService.LOGIN_OK) {
 				login.dismiss();
+			}else if (resultCode == HttpService.CONFIRM_OK){
+				Card card = resultData.getParcelable("card");
+				myApp.getModel().confirmCard(card);
 			}
 		}
 	}

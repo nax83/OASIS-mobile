@@ -759,7 +759,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				btn_ok.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						if(myApp.isCardPresent(card)){
+						if(myApp.getModel().isCardPresent(card)){
 							restartScan();
 							return;
 						}
@@ -774,19 +774,23 @@ public final class MyCaptureActivity extends CaptureActivity implements
 							startService(intent);
 						}else {
 							//pass it directly to the model. It will add the card in the wait list
-							myApp.addToList(card);
+							myApp.getModel().addToList(card);
+							Toast.makeText(MyCaptureActivity.this, card.mFullname + " aggiunto in lista d'attesa",
+							Toast.LENGTH_LONG).show();
 						}
 						restartScan();
 					}
 				});
 				if (confirm != null) {
+					confirm.findViewById(R.id.loading).setVisibility(
+							View.GONE);
 					confirm.findViewById(R.id.wrapper).setVisibility(
 							View.VISIBLE);
-					((TextView) confirm.findViewById(R.id.text1))
+					((TextView) confirm.findViewById(R.id.name))
 							.setText(card.mFullname);
-					((TextView) confirm.findViewById(R.id.text3)).setText(card.mDesc);
-					confirm.findViewById(R.id.loading).setVisibility(
-							View.INVISIBLE);
+					((TextView) confirm.findViewById(R.id.description)).setText(card.mDesc);
+					((TextView) confirm.findViewById(R.id.conc_num)).setText(getString(R.string.conc_num)+ " " + card.mConcNum);
+					((TextView) confirm.findViewById(R.id.auth_num)).setText(getString(R.string.auth_num)+ " " + card.mAuthNum);
 				}
 			}else if (resultCode == HttpService.DETAILS_KO){
 				Log.d(TAG, "Details error");
@@ -794,9 +798,9 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				
 			}else if (resultCode == HttpService.CONFIRM_OK) {
 				Card card = resultData.getParcelable("card");
-				myApp.addToList(card);
+				myApp.getModel().addToList(card);
+				
 			}
 		}
 	}
-
 }

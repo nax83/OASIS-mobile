@@ -173,9 +173,9 @@ public abstract class ResultHandler {
    * @param listener The on click listener to install for this button.
    */
   final void showGoogleShopperButton(View.OnClickListener listener) {
-    View shopperButton = activity.findViewById(R.id.shopper_button);
-    shopperButton.setVisibility(View.VISIBLE);
-    shopperButton.setOnClickListener(listener);
+//    View shopperButton = activity.findViewById(R.id.shopper_button);
+//    shopperButton.setVisibility(View.VISIBLE);
+//    shopperButton.setOnClickListener(listener);
   }
 
   /**

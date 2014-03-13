@@ -171,14 +171,14 @@ public class CaptureActivity extends Activity implements
 		resultView = findViewById(R.id.result_view);
 		// attach handlers to resultView btns
 				
-		View btn_close = findViewById(R.id.btn_finish);
-		btn_close.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
+//		View btn_close = findViewById(R.id.btn_finish);
+//		btn_close.setOnClickListener(new View.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				finish();
+//			}
+//		});
 	}
 
 	@Override

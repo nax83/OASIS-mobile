@@ -121,13 +121,6 @@ public class MainActivity extends ActionBarActivity implements
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-//		CardsAdapter cardsAdapter = new CardsAdapter(this, myApp.getModel()
-//				.getCheckedInList());
-//		WaitingCardsAdapter cardsWAdapter = new WaitingCardsAdapter(this, myApp
-//				.getModel().getWaitingList());
-//
-//		mCheckedInList.setListAdapter(cardsAdapter);
-//		mWaitingList.setListAdapter(cardsWAdapter);
 	}
 	
 	private void updateAdapters(){
@@ -220,7 +213,7 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onCardClicked(String id) {
 		final Card c = myApp.getModel().findCardById(id);
-		if (c != null && !c.mIsConfirmed) {
+		if (c != null) {
 			new AlertDialog.Builder(this)
 					.setIcon(android.R.drawable.ic_dialog_info)
 					.setTitle(R.string.confirm)
@@ -238,7 +231,7 @@ public class MainActivity extends ActionBarActivity implements
 									Intent intent = new Intent(MainActivity.this, HttpService.class);
 									intent.putExtra(HttpService.REQTYPE, HttpService.REQCONFIRM);
 									intent.putExtra("receiver", resultReceiver);
-									intent.putExtra("card", c);
+									intent.putExtra(Card.TAG, c);
 									startService(intent);
 								}
 							}).setNegativeButton(R.string.no, null).show();
@@ -262,7 +255,7 @@ public class MainActivity extends ActionBarActivity implements
 			if (resultCode == HttpService.LOGIN_OK) {
 				login.dismiss();
 			}else if (resultCode == HttpService.CONFIRM_OK){
-				Card card = resultData.getParcelable("card");
+				Card card = resultData.getParcelable(Card.TAG);
 				myApp.getModel().confirmCard(card);
 			}
 		}

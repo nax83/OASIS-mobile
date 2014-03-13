@@ -51,10 +51,7 @@ public class Model extends Observable{
 	
 	private void addToCheckedList(Card c) {
 		if (checkedInList.indexOf(c) == -1) {
-			c.mIsConfirmed = true;
 			checkedInList.add(0, c);
-//			Toast.makeText(this, c.mFullname + " aggiunto alla lista",
-//					Toast.LENGTH_LONG).show();
 		} else {
 			Log.d(TAG, c.mFullname + "already checked in");
 		}
@@ -74,20 +71,17 @@ public class Model extends Observable{
 	
 
 	public void confirmCard(Card c) {
-		int pos = -1;
-		for (int i = 0; i < waitingList.size(); i++) {
+		int i;
+		for (i = 0 ; i < waitingList.size(); i++) {
 			Card tmp = waitingList.get(i);
 			if(tmp.mId.equals(c.mId)){
-				pos = i;
+				waitingList.remove(i);
 				break;
 			}
 		}
-		if(pos != -1){
-			c.mIsConfirmed = true;
-			waitingList.set(pos, c);
-			setChanged();
-			notifyObservers();
-		}
+		checkedInList.add(c);
+		setChanged();
+		notifyObservers();
 	}
 	
 	public boolean isCardPresent(Card c){

@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class Card implements Parcelable {
 	
-	public static final String card = "CARD";
+	public static final String TAG = "CARD";
 	public final String mId;
 	public final String mFullname;
 	public final String mDesc;
@@ -15,7 +15,7 @@ public class Card implements Parcelable {
 	public final int mPastPresences;
 	
 	//it's not final because it's used internally
-	public boolean mIsConfirmed = false;
+	//public boolean mIsConfirmed = false;
 	
 	public Card(String id, String fullname, String desc, String auth_num, String conc_num, int pastPresences, boolean isOwner) {
 		this.mFullname = fullname;
@@ -38,7 +38,7 @@ public class Card implements Parcelable {
 		this.mConcNum = data[4];
 		this.mPastPresences = in.readInt();
 		this.mIsOwner = in.readByte() != 0;
-		this.mIsConfirmed = in.readByte() != 0;
+		//this.mIsConfirmed = in.readByte() != 0;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class Card implements Parcelable {
 				this.mDesc, this.mAuthNum, this.mConcNum });
 		dest.writeInt(this.mPastPresences);
 		dest.writeByte((byte) (this.mIsOwner ? 1 : 0));
-		dest.writeByte((byte)(this.mIsConfirmed ? 1 : 0));	
+		//dest.writeByte((byte)(this.mIsConfirmed ? 1 : 0));	
 	}
 
 	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

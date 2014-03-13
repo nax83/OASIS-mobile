@@ -752,7 +752,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 		@Override
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
 			if (resultCode == HttpService.DETAILS_OK) {
-				final Card card = resultData.getParcelable("card");
+				final Card card = resultData.getParcelable(Card.TAG);
 				if (card == null) 
 					return;
 				Button btn_ok = (Button) confirm.findViewById(R.id.btn_ok);
@@ -770,7 +770,7 @@ public final class MyCaptureActivity extends CaptureActivity implements
 							intent.putExtra(HttpService.REQTYPE, HttpService.REQCONFIRM);
 							intent.putExtra("receiver", resultReceiver);
 							intent.putExtra(HttpService.RESOURCE_URL, mEndPoint);
-							intent.putExtra("card", card);
+							intent.putExtra(Card.TAG, card);
 							startService(intent);
 						}else {
 							//pass it directly to the model. It will add the card in the wait list
@@ -797,8 +797,10 @@ public final class MyCaptureActivity extends CaptureActivity implements
 				restartScan();
 				
 			}else if (resultCode == HttpService.CONFIRM_OK) {
-				Card card = resultData.getParcelable("card");
+				Card card = resultData.getParcelable(Card.TAG);
 				myApp.getModel().addToList(card);
+				Toast.makeText(MyCaptureActivity.this, card.mFullname + " aggiunto ai presenti",
+						Toast.LENGTH_LONG).show();
 				
 			}
 		}

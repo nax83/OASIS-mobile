@@ -158,8 +158,8 @@ public class HttpService extends IntentService {
 					
 					Bundle b = new Bundle();
 					if(PLACEOWNER_YES.equals(isOwner))
-						b.putParcelable("card", new Card(id, fullname, desc,auth_num, conc_num, past_presences, true));
-					else b.putParcelable("card", new Card(id, fullname, desc,auth_num, conc_num, past_presences, false));
+						b.putParcelable(Card.TAG, new Card(id, fullname, desc,auth_num, conc_num, past_presences, true));
+					else b.putParcelable(Card.TAG, new Card(id, fullname, desc,auth_num, conc_num, past_presences, false));
 					resultReceiver.send(DETAILS_OK, b);
 				}
 
@@ -177,13 +177,13 @@ public class HttpService extends IntentService {
 			break;
 		case REQCONFIRM:
 			
-			Card card = intent.getParcelableExtra("card");
+			Card card = intent.getParcelableExtra(Card.TAG);
 			try {
 				HashMap<String, String> params = new HashMap<String, String>();
 				params.put("badge_id", card.mId);
 				ServerUtilities.post(Config.ACTION_ADDPRESENCE, params);
 				Bundle ret = new Bundle();
-				ret.putParcelable("card", card);
+				ret.putParcelable(Card.TAG, card);
 				resultReceiver.send(CONFIRM_OK, ret);
 			} catch (IOException e) {
 				e.printStackTrace();

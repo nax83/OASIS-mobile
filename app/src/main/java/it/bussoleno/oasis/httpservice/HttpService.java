@@ -8,12 +8,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import it.bussoleno.oasis.Card;
+import it.bussoleno.oasis.httpservice.models.Merchant;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class HttpService extends IntentService {
 
@@ -107,69 +112,36 @@ public class HttpService extends IntentService {
 			break;
 		case REQDETAILS:
 
-			JSONObject response = null;
-			String fullname="";
-			String first = "";
-			String last = "";
-			String desc = "";
-			String id = "";
-			String isOwner = "";
-			String auth_num = "";
-			String conc_num = "";
-			int past_presences = 0;
+			String response;
 			
 			String resource_url = intent.getStringExtra(RESOURCE_URL);
 			System.out.println("resource url is " + resource_url);
 			try {
-				response = ServerUtilities.getJSON(resource_url, "");
-				if (response != null) {
-					
-					JSONArray details;
-					id = response.getString(TAG_ID);
-					past_presences = Integer.parseInt(response.getString(TAG_PAST_PRESENCES));
-					
-					details = response.getJSONArray(TAG_DETAILS);
-					for (int i = 0; i < details.length(); i++) {
-						JSONObject tmp = (JSONObject) details.get(i);
-						String kind = tmp.getString(TAG_KIND);
-						if (TAG_KIND_FAMILYNAME.equals(kind))
-							first = tmp.getString(TAG_VALUE);
-						if (TAG_KIND_FIRSTNAME.equals(kind))
-							last = tmp.getString(TAG_VALUE);
-						if (TAG_KIND_DESCRIPTION.equals(kind))
-							desc = tmp.getString(TAG_VALUE);
-						if (TAG_KIND_PLACEOWNER.equals(kind))
-							isOwner = tmp.getString(TAG_VALUE);
-						if (TAG_KIND_AUTHNUMBER.equals(kind))
-							auth_num = tmp.getString(TAG_VALUE);
-						if (TAG_KIND_CONCNUMBER.equals(kind))
-							conc_num = tmp.getString(TAG_VALUE);
-					}
-					if ("".equals(first) || "".equals(last) || "".equals(desc)) {
-						// TODO: handle error
-						System.out.println("Error parsing first last");
-					}
 
-					first = ("" + first.charAt(0)).toUpperCase()
-							+ first.substring(1, first.length());
-					last = ("" + last.charAt(0)).toUpperCase()
-							+ last.substring(1, last.length());
-					fullname = first + " " + last;
-					
-					Bundle b = new Bundle();
-					if(PLACEOWNER_YES.equals(isOwner))
-						b.putParcelable(Card.TAG, new Card(id, fullname, desc,auth_num, conc_num, past_presences, true));
-					else b.putParcelable(Card.TAG, new Card(id, fullname, desc,auth_num, conc_num, past_presences, false));
+				response = ServerUtilities.get(resource_url, "");
+				if (response != null) {
+
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+                    final Merchant merchant = gson.fromJson(response, Merchant.class);
+
+                    String tmp = merchant.getValue(Merchant.PLACE_OWNER);
+                    boolean isOwner = false;
+                    if("S".equals(tmp)) {
+                        isOwner = true;
+                    }
+
+                    Bundle b = new Bundle();
+                    b.putParcelable(Card.TAG, new Card("" + merchant.id, merchant.name, merchant.description,
+                            merchant.getValue(Merchant.AUTHORIZATION_NUMBER), merchant.getValue(Merchant.CONCESSION_NUMBER),
+                            merchant.past_presences, isOwner));
 					resultReceiver.send(DETAILS_OK, b);
 				}
 
 			} catch (IOException e) {
-				e.printStackTrace();
-				resultReceiver.send(DETAILS_KO, new Bundle());
-			} catch (JSONException e) {
-				e.printStackTrace();
-				resultReceiver.send(DETAILS_KO, new Bundle());
-			} catch (NumberFormatException nfe){
+                e.printStackTrace();
+                resultReceiver.send(DETAILS_KO, new Bundle());
+            } catch (NumberFormatException nfe){
 				nfe.printStackTrace();
 				resultReceiver.send(DETAILS_KO, new Bundle());
 			}
